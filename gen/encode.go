@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/tinylib/msgp/msgp"
+	"github.com/CovenantSQL/HashStablePack/msgp"
 )
 
 func encode(w io.Writer) *encodeGen {

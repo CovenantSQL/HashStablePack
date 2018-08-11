@@ -5,7 +5,7 @@ package msgp_test
 import (
 	"bytes"
 	"crypto/rand"
-	"github.com/tinylib/msgp/msgp"
+	"github.com/CovenantSQL/HashStablePack/msgp"
 	prand "math/rand"
 	"os"
 	"testing"

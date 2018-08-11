@@ -18,7 +18,7 @@
 //  -marshal = satisfy the `msgp.Marshaler` and `msgp.Unmarshaler` interfaces (default is true)
 //  -tests = generate tests and benchmarks (default is true)
 //
-// For more information, please read README.md, and the wiki at github.com/tinylib/msgp
+// For more information, please read README.md, and the wiki at github.com/CovenantSQL/HashStablePack
 //
 package main
 
@@ -29,9 +29,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/tinylib/msgp/gen"
-	"github.com/tinylib/msgp/parse"
-	"github.com/tinylib/msgp/printer"
+	"github.com/CovenantSQL/HashStablePack/gen"
+	"github.com/CovenantSQL/HashStablePack/parse"
+	"github.com/CovenantSQL/HashStablePack/printer"
 	"github.com/ttacon/chalk"
 )
 
