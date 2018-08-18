@@ -35,7 +35,7 @@ func TestIssue185Idents(t *testing.T) {
 		{tpl: issue185ComplexIdentsTpl, expectedChanged: []string{"Test2"}},
 	}
 
-	methods := []string{"DecodeMsg", "EncodeMsg", "Msgsize", "MarshalMsg", "UnmarshalMsg"}
+	methods := []string{"DecodeMsg", "EncodeMsg", "Msgsize", "MarshalHash", "UnmarshalMsg"}
 
 	for idx, identCase := range identCases {
 		// generate the code, extract the generated variable names, mapped to function name

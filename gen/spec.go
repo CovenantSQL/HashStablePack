@@ -102,26 +102,14 @@ func NewPrinter(m Method, out io.Writer, tests io.Writer) *Printer {
 		panic("cannot print tests with 'nil' tests argument!")
 	}
 	gens := make([]generator, 0, 7)
-	if m.isset(Decode) {
-		gens = append(gens, decode(out))
-	}
-	if m.isset(Encode) {
-		gens = append(gens, encode(out))
-	}
 	if m.isset(Marshal) {
 		gens = append(gens, marshal(out))
-	}
-	if m.isset(Unmarshal) {
-		gens = append(gens, unmarshal(out))
 	}
 	if m.isset(Size) {
 		gens = append(gens, sizes(out))
 	}
 	if m.isset(marshaltest) {
 		gens = append(gens, mtest(tests))
-	}
-	if m.isset(encodetest) {
-		gens = append(gens, etest(tests))
 	}
 	if len(gens) == 0 {
 		panic("NewPrinter called with invalid method flags")

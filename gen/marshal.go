@@ -37,14 +37,15 @@ func (m *marshalGen) Execute(p Elem) error {
 		return nil
 	}
 
-	m.p.comment("MarshalMsg implements msgp.Marshaler")
+	m.p.comment("MarshalHash marshals for hash")
 
 	// save the vname before
 	// calling methodReceiver so
 	// that z.Msgsize() is printed correctly
 	c := p.Varname()
 
-	m.p.printf("\nfunc (%s %s) MarshalMsg(b []byte) (o []byte, err error) {", p.Varname(), imutMethodReceiver(p))
+	m.p.printf("\nfunc (%s %s) MarshalHash() (o []byte, err error) {", p.Varname(), imutMethodReceiver(p))
+	m.p.printf("\nvar b []byte")
 	m.p.printf("\no = msgp.Require(b, %s.Msgsize())", c)
 	next(m, p)
 	m.p.nakedReturn()
@@ -111,9 +112,9 @@ func (m *marshalGen) mapstruct(s *Struct) {
 		if !m.p.ok() {
 			return
 		}
-		data = msgp.AppendString(nil, s.Fields[i].FieldTag)
-
-		m.p.printf("\n// string %q", s.Fields[i].FieldTag)
+		//data = msgp.AppendString(nil, s.Fields[i].FieldTag)
+		//
+		//m.p.printf("\n// string %q", s.Fields[i].FieldTag)
 		m.Fuse(data)
 
 		next(m, s.Fields[i].FieldElem)
@@ -197,8 +198,12 @@ func (m *marshalGen) gBase(b *BaseElem) {
 	var echeck bool
 	switch b.Value {
 	case IDENT:
-		echeck = true
-		m.p.printf("\no, err = %s.MarshalMsg(o)", vname)
+		m.p.printf(`
+			if oTemp, err := %s.MarshalHash(); err != nil {
+				return nil, err
+			} else {
+				o = msgp.AppendBytes(o, oTemp)
+			}`, vname)
 	case Intf, Ext:
 		echeck = true
 		m.p.printf("\no, err = msgp.Append%s(o, %s)", b.BaseName(), vname)

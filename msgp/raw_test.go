@@ -77,10 +77,10 @@ func TestRaw(t *testing.T) {
 	var outsl []byte
 	outsl, err = r.MarshalMsg(outsl)
 	if err != nil {
-		t.Fatal("error from MarshalMsg:", err)
+		t.Fatal("error from MarshalHash:", err)
 	}
 	if !bytes.Equal(outsl, bts) {
-		t.Fatal("value of output and input of MarshalMsg are not equal.")
+		t.Fatal("value of output and input of MarshalHash are not equal.")
 	}
 }
 
