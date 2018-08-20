@@ -2,6 +2,12 @@ Hash Stable Pack
 =======
 This is a code generation tool and serialization library for Calculation of Stable Hash for content. Basically it will generate an `MarshalHash` method which follow the MessagePack but **without the key**. 
 
+### For
+- Quick compare nested struct without reflection
+- Quick calculation of struct hash or signature without reflection
+
+### How?
+
 That is the following 2 structs with different member name
 
 ```go
@@ -10,8 +16,8 @@ package person
 //go:generate hsp
 type Person1 struct {
 	Name1       string 
-	Address1    string 
 	Age1        int    
+	Address1    string 
 	unexported1 bool             // this field is ignored
 }
 
@@ -36,8 +42,8 @@ import (
 func TestMarshalHashAccountStable3(t *testing.T) {
 	p1 := Person1{
 		Name1:       "Auxten",
-		Address1:    "@CovenantSQL.io",
 		Age1:        28,
+		Address1:    "@CovenantSQL.io",
 		unexported1: false,
 	}
 	p2 := Person2{
@@ -59,7 +65,7 @@ func TestMarshalHashAccountStable3(t *testing.T) {
 	}
 }
 ```
-the order of struct member is important,
+the order of struct member is sorted by type name, so "string, int", "int, string" is equivalent.
 
 
 
@@ -73,6 +79,11 @@ You can read more about MessagePack [in the wiki](http://github.com/tinylib/msgp
 - [User-defined extensions](http://github.com/tinylib/msgp/wiki/Using-Extensions)
 - Type safety
 - Encoding flexibility
+
+### Why not?
+
+- MessagePack: member name is unnecessary, different implementation may add some fields which made result undetermined.
+- Prorobuf: struct must defined in proto language, and other limitations discussed [here](https://gist.github.com/kchristidis/39c8b310fd9da43d515c4394c3cd9510)
 
 ### Quickstart
 
@@ -124,6 +135,9 @@ type Struct struct {
 }
 ```
 As long as the declarations of `MyInt` and `Data` are in the same file as `Struct`, the parser will determine that the type information for `MyInt` and `Data` can be passed into the definition of `Struct` before its methods are generated.
+
+### Known issues
+- map type is not supported. will cause undetermined marshal content.
 
 ### License
 

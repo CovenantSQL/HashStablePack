@@ -408,6 +408,22 @@ type StructField struct {
 	FieldElem Elem   // the field type
 }
 
+// Len returns the length of the uints array.
+func (x *Struct) Len() int { return len(x.Fields) }
+
+// Less returns true if node i is less than node j.
+func (x *Struct) Less(i, j int) bool {
+	fi := x.Fields[i]
+	fj := x.Fields[j]
+	return fi.FieldElem.TypeName() < fj.FieldElem.TypeName()
+}
+
+// Swap exchanges nodes i and j.
+func (x *Struct) Swap(i, j int) {
+	x.Fields[i], x.Fields[j] = x.Fields[j], x.Fields[i]
+}
+
+
 type ShimMode int
 
 const (

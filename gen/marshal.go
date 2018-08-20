@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/CovenantSQL/HashStablePack/marshalhash"
+	"github.com/golang/go/src/sort"
 )
 
 func marshal(w io.Writer) *marshalGen {
@@ -25,6 +26,12 @@ func (m *marshalGen) Apply(dirs []string) error {
 	return nil
 }
 
+func (m *marshalGen) sort(e Elem) {
+	if es, ok := e.(*Struct); ok {
+		sort.Sort(es)
+	}
+}
+
 func (m *marshalGen) Execute(p Elem) error {
 	if !m.p.ok() {
 		return m.p.err
@@ -33,6 +40,8 @@ func (m *marshalGen) Execute(p Elem) error {
 	if p == nil {
 		return nil
 	}
+	m.sort(p)
+
 	if !IsPrintable(p) {
 		return nil
 	}

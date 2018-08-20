@@ -9,13 +9,14 @@ import (
 //go:generate hsp
 
 const Eight = 8
+
 type MyInt int
 type Data []byte
 
 type Struct struct {
-	Which  map[string]*MyInt `msg:"which"`
-	Other  Data              `msg:"other"`
-	Nums   [Eight]float64    `msg:"nums"`
+	Which map[string]*MyInt `msg:"which"`
+	Other Data              `msg:"other"`
+	Nums  [Eight]float64    `msg:"nums"`
 }
 
 // HeaderTest is a block header.
@@ -44,14 +45,16 @@ type HeaderTest2 struct {
 
 type Person1 struct {
 	Name1       string
-	Address1    string
 	Age1        int
-	unexported1 bool             // this field is ignored
+	Address1    string
+	Map         map[string]int
+	unexported1 bool // this field is ignored
 }
 
 type Person2 struct {
 	Name2       string
 	Address2    string
 	Age2        int
-	unexported2 bool             // this field is ignored
+	Map         map[string]int
+	unexported2 bool // this field is ignored
 }
