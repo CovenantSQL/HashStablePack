@@ -23,28 +23,22 @@ const (
 type Method uint8
 
 // are the bits in 'f' set in 'm'?
-func (m Method) isset(f Method) bool { return (m&f == f) }
+func (m Method) isset(f Method) bool { return m&f == f }
 
 // String implements fmt.Stringer
 func (m Method) String() string {
 	switch m {
 	case 0, invalidmeth:
 		return "<invalid method>"
-	case Decode:
-		return "decode"
-	case Encode:
-		return "encode"
 	case Marshal:
 		return "marshal"
-	case Unmarshal:
-		return "unmarshal"
 	case Size:
 		return "size"
 	case Test:
 		return "test"
 	default:
 		// return e.g. "decode+encode+test"
-		modes := [...]Method{Decode, Encode, Marshal, Unmarshal, Size, Test}
+		modes := [...]Method{Marshal, Size, Test}
 		any := false
 		nm := ""
 		for _, mm := range modes {
@@ -62,35 +56,12 @@ func (m Method) String() string {
 	}
 }
 
-func strtoMeth(s string) Method {
-	switch s {
-	case "encode":
-		return Encode
-	case "decode":
-		return Decode
-	case "marshal":
-		return Marshal
-	case "unmarshal":
-		return Unmarshal
-	case "size":
-		return Size
-	case "test":
-		return Test
-	default:
-		return 0
-	}
-}
-
 const (
-	Decode      Method                       = 1 << iota // hsp.Decodable
-	Encode                                               // hsp.Encodable
-	Marshal                                              // hsp.Marshaler
-	Unmarshal                                            // hsp.Unmarshaler
-	Size                                                 // hsp.Sizer
-	Test                                                 // generate tests
-	invalidmeth                                          // this isn't a method
-	encodetest  = Encode | Decode | Test                 // tests for Encodable and Decodable
-	marshaltest = Marshal | Unmarshal | Test             // tests for Marshaler and Unmarshaler
+	Marshal     Method = 1 << iota // hsp.Marshaler
+	Size                           // hsp.Sizer
+	Test                           // generate tests
+	invalidmeth                    // this isn't a method
+	marshaltest = Marshal | Test   // tests for Marshaler and Unmarshaler
 )
 
 type Printer struct {
@@ -231,12 +202,12 @@ func imutMethodReceiver(p Elem) string {
 	nope:
 		return "*" + p.TypeName()
 
-	// gets dereferenced automatically
+		// gets dereferenced automatically
 	case *Array:
 		return "*" + p.TypeName()
 
-	// everything else can be
-	// by-value.
+		// everything else can be
+		// by-value.
 	default:
 		return p.TypeName()
 	}
@@ -253,8 +224,8 @@ func methodReceiver(p Elem) string {
 	// so no need to alter varname
 	case *Struct, *Array:
 		return "*" + p.TypeName()
-	// set variable name to
-	// *varname
+		// set variable name to
+		// *varname
 	default:
 		p.SetVarname("(*" + p.Varname() + ")")
 		return "*" + p.TypeName()

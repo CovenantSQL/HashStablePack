@@ -81,7 +81,9 @@ func generate(f *parse.FileSet, mode gen.Method) (*bytes.Buffer, *bytes.Buffer, 
 	outbuf := bytes.NewBuffer(make([]byte, 0, 4096))
 	writePkgHeader(outbuf, f.Package)
 
-	myImports := []string{"github.com/CovenantSQL/HashStablePack/hsp"}
+	myImports := []string{}
+	myImports = append(myImports, `hsp "github.com/CovenantSQL/HashStablePack/marshalhash"`)
+
 	for _, imp := range f.Imports {
 		if imp.Name != nil {
 			// have an alias, include it.
@@ -98,11 +100,7 @@ func generate(f *parse.FileSet, mode gen.Method) (*bytes.Buffer, *bytes.Buffer, 
 	if mode&gen.Test == gen.Test {
 		testbuf = bytes.NewBuffer(make([]byte, 0, 4096))
 		writePkgHeader(testbuf, f.Package)
-		if mode&(gen.Encode|gen.Decode) != 0 {
-			writeImportHeader(testbuf, "bytes", "crypto/rand", "github.com/CovenantSQL/HashStablePack/hsp", "testing")
-		} else {
-			writeImportHeader(testbuf, "github.com/CovenantSQL/HashStablePack/hsp", "testing")
-		}
+		writeImportHeader(testbuf, "bytes", "crypto/rand", "encoding/binary", `hsp "github.com/CovenantSQL/HashStablePack/marshalhash"`, "testing")
 		testwr = testbuf
 	}
 	return outbuf, testbuf, f.PrintTo(gen.NewPrinter(mode, outbuf, testwr))

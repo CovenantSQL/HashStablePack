@@ -5,7 +5,7 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/CovenantSQL/HashStablePack/hsp"
+	"github.com/CovenantSQL/HashStablePack/marshalhash"
 )
 
 type sizeState uint8
@@ -97,7 +97,7 @@ func (s *sizeGen) gStruct(st *Struct) {
 	nfields := uint32(len(st.Fields))
 
 	if st.AsTuple {
-		data := hsp.AppendArrayHeader(nil, nfields)
+		data := marshalhash.AppendArrayHeader(nil, nfields)
 		s.addConstant(strconv.Itoa(len(data)))
 		for i := range st.Fields {
 			if !s.p.ok() {
@@ -106,11 +106,11 @@ func (s *sizeGen) gStruct(st *Struct) {
 			next(s, st.Fields[i].FieldElem)
 		}
 	} else {
-		data := hsp.AppendMapHeader(nil, nfields)
+		data := marshalhash.AppendMapHeader(nil, nfields)
 		s.addConstant(strconv.Itoa(len(data)))
 		for i := range st.Fields {
 			data = data[:0]
-			data = hsp.AppendString(data, st.Fields[i].FieldTag)
+			data = marshalhash.AppendString(data, st.Fields[i].FieldTag)
 			s.addConstant(strconv.Itoa(len(data)))
 			next(s, st.Fields[i].FieldElem)
 		}
@@ -255,11 +255,11 @@ func fixedsizeExpr(e Elem) (string, bool) {
 			}
 		}
 		var hdrlen int
-		mhdr := hsp.AppendMapHeader(nil, uint32(len(e.Fields)))
+		mhdr := marshalhash.AppendMapHeader(nil, uint32(len(e.Fields)))
 		hdrlen += len(mhdr)
 		var strbody []byte
 		for _, f := range e.Fields {
-			strbody = hsp.AppendString(strbody[:0], f.FieldTag)
+			strbody = marshalhash.AppendString(strbody[:0], f.FieldTag)
 			hdrlen += len(strbody)
 		}
 		return fmt.Sprintf("%d + %s", hdrlen, str), true

@@ -2,20 +2,27 @@ package covenant
 
 import (
 	"gitlab.com/thunderdb/ThunderDB/proto"
-	"gitlab.com/thunderdb/ThunderDB/utils"
 	"gitlab.com/thunderdb/ThunderDB/crypto/hash"
 	"time"
-	"bytes"
-	"encoding/binary"
 )
 
 //go:generate hsp
 
+const Eight = 8
+type MyInt int
+type Data []byte
+
+type Struct struct {
+	Which  map[string]*MyInt `msg:"which"`
+	Other  Data              `msg:"other"`
+	Nums   [Eight]float64    `msg:"nums"`
+}
+
 // HeaderTest is a block header.
 type HeaderTest struct {
 	Version     int32
-	TestName	string
-	TestArray 	[]byte
+	TestName    string
+	TestArray   []byte
 	Producer    proto.NodeID
 	GenesisHash []hash.Hash
 	ParentHash  []*hash.Hash
@@ -23,21 +30,28 @@ type HeaderTest struct {
 	Timestamp   time.Time
 }
 
-// MarshalHash marshals for hash
-func (h *HeaderTest) MarshalHash() ([]byte, error) {
-	buffer := bytes.NewBuffer(nil)
-
-	if err := utils.WriteElements(buffer, binary.BigEndian,
-		h.Version,
-		h.Producer,
-		&h.GenesisHash,
-		&h.ParentHash,
-		&h.MerkleRoot,
-		h.Timestamp,
-	); err != nil {
-		return nil, err
-	}
-
-	return buffer.Bytes(), nil
+// HeaderTest is a block header.
+type HeaderTest2 struct {
+	Version2     int32
+	TestName2    string
+	TestArray2   []byte
+	Producer2    proto.NodeID
+	GenesisHash2 []hash.Hash
+	ParentHash2  []*hash.Hash
+	MerkleRoot2  *[]*hash.Hash
+	Timestamp2   time.Time
 }
 
+type Person1 struct {
+	Name1       string
+	Address1    string
+	Age1        int
+	unexported1 bool             // this field is ignored
+}
+
+type Person2 struct {
+	Name2       string
+	Address2    string
+	Age2        int
+	unexported2 bool             // this field is ignored
+}

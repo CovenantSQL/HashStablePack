@@ -7,15 +7,7 @@ import (
 
 var (
 	marshalTestTempl = template.New("MarshalTest")
-	encodeTestTempl  = template.New("EncodeTest")
 )
-
-// TODO(philhofer):
-// for simplicity's sake, right now
-// we can only generate tests for types
-// that can be initialized with the
-// "Type{}" syntax.
-// we should support all the types.
 
 func mtest(w io.Writer) *mtestGen {
 	return &mtestGen{w: w}
@@ -39,27 +31,6 @@ func (m *mtestGen) Execute(p Elem) error {
 
 func (m *mtestGen) Method() Method { return marshaltest }
 
-//type etestGen struct {
-//	passes
-//	w io.Writer
-//}
-//
-//func etest(w io.Writer) *etestGen {
-//	return &etestGen{w: w}
-//}
-//
-//func (e *etestGen) Execute(p Elem) error {
-//	p = e.applyall(p)
-//	if p != nil && IsPrintable(p) {
-//		switch p.(type) {
-//		case *Struct, *Array, *Slice, *Map:
-//			return encodeTestTempl.Execute(e.w, p)
-//		}
-//	}
-//	return nil
-//}
-//
-//func (e *etestGen) Method() Method { return encodetest }
 
 func init() {
 	template.Must(marshalTestTempl.Parse(`func TestMarshalHash{{.TypeName}}(t *testing.T) {

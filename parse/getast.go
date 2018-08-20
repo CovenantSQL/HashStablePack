@@ -196,18 +196,12 @@ parse:
 
 func strToMethod(s string) gen.Method {
 	switch s {
-	case "encode":
-		return gen.Encode
-	case "decode":
-		return gen.Decode
 	case "test":
 		return gen.Test
 	case "size":
 		return gen.Size
 	case "marshal":
 		return gen.Marshal
-	case "unmarshal":
-		return gen.Unmarshal
 	default:
 		return 0
 	}

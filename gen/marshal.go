@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/CovenantSQL/HashStablePack/hsp"
+	"github.com/CovenantSQL/HashStablePack/marshalhash"
 )
 
 func marshal(w io.Writer) *marshalGen {
@@ -86,7 +86,7 @@ func (m *marshalGen) gStruct(s *Struct) {
 
 func (m *marshalGen) tuple(s *Struct) {
 	data := make([]byte, 0, 5)
-	data = hsp.AppendArrayHeader(data, uint32(len(s.Fields)))
+	data = marshalhash.AppendArrayHeader(data, uint32(len(s.Fields)))
 	m.p.printf("\n// array header, size %d", len(s.Fields))
 	m.Fuse(data)
 	if len(s.Fields) == 0 {
@@ -102,7 +102,7 @@ func (m *marshalGen) tuple(s *Struct) {
 
 func (m *marshalGen) mapstruct(s *Struct) {
 	data := make([]byte, 0, 64)
-	data = hsp.AppendMapHeader(data, uint32(len(s.Fields)))
+	data = marshalhash.AppendMapHeader(data, uint32(len(s.Fields)))
 	m.p.printf("\n// map header, size %d", len(s.Fields))
 	m.Fuse(data)
 	if len(s.Fields) == 0 {
