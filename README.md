@@ -76,21 +76,31 @@ You can read more about MessagePack [in the wiki](http://github.com/tinylib/msgp
 
 ### Quickstart
 
-Quick Install
+1. Quick Install
 ```bash
 go get -u github.com/CovenantSQL/HashStablePack/hsp
 ```
 
+2. Add tag for source
 In a source file, include the following directive:
 
 ```go
 //go:generate hsp
 ```
 
+3. Run go generate
+```bash
+go generate ./...
+```
+
 The `hsp` command will generate serialization methods for all exported type declarations in the file.
 
-
 By default, the code generator will only generate `MarshalHash` and `Msgsize` method
+```go
+func (z *Test) MarshalHash() (o []byte, err error)
+func (z *Test) Msgsize() (s int)
+```
+
 
 ### Features
 
