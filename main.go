@@ -1,4 +1,4 @@
-// msgp is a code generation tool for
+// hsp is a code generation tool for
 // creating methods to serialize and de-serialize
 // Go data structures to and from MessagePack.
 //
@@ -6,7 +6,7 @@
 // To use it, include the following directive in a
 // go source file with types requiring source generation:
 //
-//     //go:generate msgp
+//     //go:generate hsp
 //
 // The go generate tool should set the proper environment variables for
 // the generator to execute without any command-line flags. However, the
@@ -14,8 +14,8 @@
 //
 //  -o = output file name (default is {input}_gen.go)
 //  -file = input file name (or directory; default is $GOFILE, which is set by the `go generate` command)
-//  -io = satisfy the `msgp.Decodable` and `msgp.Encodable` interfaces (default is true)
-//  -marshal = satisfy the `msgp.Marshaler` and `msgp.Unmarshaler` interfaces (default is true)
+//  -io = satisfy the `hsp.Decodable` and `hsp.Encodable` interfaces (default is true)
+//  -marshal = satisfy the `hsp.Marshaler` and `hsp.Unmarshaler` interfaces (default is true)
 //  -tests = generate tests and benchmarks (default is true)
 //
 // For more information, please read README.md, and the wiki at github.com/CovenantSQL/HashStablePack
@@ -80,7 +80,7 @@ func main() {
 
 // Run writes all methods using the associated file or path, e.g.
 //
-//	err := msgp.Run("path/to/myfile.go", gen.Size|gen.Marshal|gen.Unmarshal|gen.Test, false)
+//	err := hsp.Run("path/to/myfile.go", gen.Size|gen.Marshal|gen.Unmarshal|gen.Test, false)
 //
 func Run(gofile string, mode gen.Method, unexported bool) error {
 	if mode&^gen.Test == 0 {

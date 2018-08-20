@@ -1,6 +1,6 @@
 package _generated
 
-//go:generate msgp
+//go:generate hsp
 
 type Issue102 struct{}
 
@@ -11,11 +11,11 @@ type Issue102deep struct {
 	Z int
 }
 
-//msgp:tuple Issue102Tuple
+//hsp:tuple Issue102Tuple
 
 type Issue102Tuple struct{}
 
-//msgp:tuple Issue102TupleDeep
+//hsp:tuple Issue102TupleDeep
 
 type Issue102TupleDeep struct {
 	A int
@@ -29,14 +29,14 @@ type Issue102Uses struct {
 	NestedPtr *Issue102
 }
 
-//msgp:tuple Issue102TupleUsesTuple
+//hsp:tuple Issue102TupleUsesTuple
 
 type Issue102TupleUsesTuple struct {
 	Nested    Issue102Tuple
 	NestedPtr *Issue102Tuple
 }
 
-//msgp:tuple Issue102TupleUsesMap
+//hsp:tuple Issue102TupleUsesMap
 
 type Issue102TupleUsesMap struct {
 	Nested    Issue102

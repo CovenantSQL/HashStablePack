@@ -9,7 +9,7 @@ import (
 	"encoding/binary"
 )
 
-//go:generate msgp
+//go:generate hsp
 
 // HeaderTest is a block header.
 type HeaderTest struct {

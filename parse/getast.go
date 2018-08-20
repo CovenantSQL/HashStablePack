@@ -216,7 +216,7 @@ func strToMethod(s string) gen.Method {
 func (f *FileSet) applyDirs(p *gen.Printer) {
 	// apply directives of the form
 	//
-	// 	//msgp:encode ignore {{TypeName}}
+	// 	//hsp:encode ignore {{TypeName}}
 	//
 loop:
 	for _, d := range f.Directives {
@@ -339,7 +339,7 @@ func (fs *FileSet) getField(f *ast.Field) []gen.StructField {
 	if f.Tag != nil {
 		body := reflect.StructTag(strings.Trim(f.Tag.Value, "`")).Get("msg")
 		if body == "" {
-			body = reflect.StructTag(strings.Trim(f.Tag.Value, "`")).Get("msgpack")
+			body = reflect.StructTag(strings.Trim(f.Tag.Value, "`")).Get("hspack")
 		}
 		tags := strings.Split(body, ",")
 		if len(tags) == 2 && tags[1] == "extension" {

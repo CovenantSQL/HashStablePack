@@ -4,10 +4,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/CovenantSQL/HashStablePack/msgp"
+	"github.com/CovenantSQL/HashStablePack/hsp"
 )
 
-//go:generate msgp -o generated.go
+//go:generate hsp -o generated.go
 
 // All of the struct
 // definitions in this
@@ -24,10 +24,10 @@ type Block [32]byte
 // tests edge-cases with
 // compiling size compilation.
 type X struct {
-	Values    [32]byte    // should compile to 32*msgp.ByteSize; encoded as Bin
+	Values    [32]byte    // should compile to 32*hsp.ByteSize; encoded as Bin
 	ValuesPtr *[32]byte   // check (*)[:] deref
 	More      Block       // should be identical to the above
-	Others    [][32]int32 // should compile to len(x.Others)*32*msgp.Int32Size
+	Others    [][32]int32 // should compile to len(x.Others)*32*hsp.Int32Size
 	Matrix    [][]int32   // should not optimize
 	ManyFixed []Fixed
 }
@@ -49,8 +49,8 @@ type TestType struct {
 	Child      *TestType   `msg:"child"`
 	Time       time.Time   `msg:"time"`
 	Any        interface{} `msg:"any"`
-	Appended   msgp.Raw    `msg:"appended"`
-	Num        msgp.Number `msg:"num"`
+	Appended   hsp.Raw    `msg:"appended"`
+	Num        hsp.Number `msg:"num"`
 	Byte       byte
 	Rune       rune
 	RunePtr    *rune
@@ -61,7 +61,7 @@ type TestType struct {
 	SlicePtr   *[]string
 }
 
-//msgp:tuple Object
+//hsp:tuple Object
 type Object struct {
 	ObjectNo string   `msg:"objno"`
 	Slice1   []string `msg:"slice1"`
@@ -69,7 +69,7 @@ type Object struct {
 	MapMap   map[string]map[string]string
 }
 
-//msgp:tuple TestBench
+//hsp:tuple TestBench
 
 type TestBench struct {
 	Name     string
@@ -80,7 +80,7 @@ type TestBench struct {
 	Money    float64
 }
 
-//msgp:tuple TestFast
+//hsp:tuple TestFast
 
 type TestFast struct {
 	Lat, Long, Alt float64 // test inline decl
@@ -116,13 +116,13 @@ const eight = 8
 type Things struct {
 	Cmplx complex64                         `msg:"complex"` // test slices
 	Vals  []int32                           `msg:"values"`
-	Arr   [msgp.ExtensionPrefixSize]float64 `msg:"arr"`            // test const array and *ast.SelectorExpr as array size
+	Arr   [hsp.ExtensionPrefixSize]float64 `msg:"arr"`            // test const array and *ast.SelectorExpr as array size
 	Arr2  [4]float64                        `msg:"arr2"`           // test basic lit array
-	Ext   *msgp.RawExtension                `msg:"ext,extension"`  // test extension
-	Oext  msgp.RawExtension                 `msg:"oext,extension"` // test extension reference
+	Ext   *hsp.RawExtension                `msg:"ext,extension"`  // test extension
+	Oext  hsp.RawExtension                 `msg:"oext,extension"` // test extension reference
 }
 
-//msgp:shim SpecialID as:[]byte using:toBytes/fromBytes
+//hsp:shim SpecialID as:[]byte using:toBytes/fromBytes
 
 type SpecialID string
 type TestObj struct{ ID1, ID2 SpecialID }
@@ -142,9 +142,9 @@ const (
 
 // test shim directive (below)
 
-//msgp:shim MyEnum as:string using:(MyEnum).String/myenumStr
+//hsp:shim MyEnum as:string using:(MyEnum).String/myenumStr
 
-//msgp:shim *os.File as:string using:filetostr/filefromstr
+//hsp:shim *os.File as:string using:filetostr/filefromstr
 
 func filetostr(f *os.File) string {
 	return f.Name()
@@ -186,7 +186,7 @@ func myenumStr(s string) MyEnum {
 }
 
 // test pass-specific directive
-//msgp:decode ignore Insane
+//hsp:decode ignore Insane
 
 type Insane [3]map[string]struct{ A, B CustomInt }
 
@@ -250,7 +250,7 @@ type ArrayConstants struct {
 // https://github.com/CovenantSQL/HashStablePack/issues/201
 
 type NonMsgStructTags struct {
-	A      []string `json:"fooJSON" msg:"fooMsgp"`
+	A      []string `json:"fooJSON" msg:"foohsp"`
 	B      string   `json:"barJSON"`
 	C      []string `json:"bazJSON" msg:"-"`
 	Nested []struct {

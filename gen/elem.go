@@ -119,15 +119,15 @@ var primitives = map[string]Primitive{
 	"bool":           Bool,
 	"interface{}":    Intf,
 	"time.Time":      Time,
-	"msgp.Extension": Ext,
+	"hsp.Extension": Ext,
 }
 
 // types built into the library
 // that satisfy all of the
 // interfaces.
 var builtins = map[string]struct{}{
-	"msgp.Raw":    struct{}{},
-	"msgp.Number": struct{}{},
+	"hsp.Raw":    struct{}{},
+	"hsp.Number": struct{}{},
 }
 
 // common data/methods for every Elem
@@ -508,7 +508,7 @@ func (s *BaseElem) BaseType() string {
 	case Time:
 		return "time.Time"
 	case Ext:
-		return "msgp.Extension"
+		return "hsp.Extension"
 
 	// everything else is base.String() with
 	// the first letter as lowercase
@@ -609,7 +609,7 @@ func writeStructFields(s []StructField, name string) {
 
 // coerceArraySize ensures we can compare constant array lengths.
 //
-// msgpack array headers are 32 bit unsigned, which is reflected in the
+// hspack array headers are 32 bit unsigned, which is reflected in the
 // ArrayHeader implementation in this library using uint32. On the Go side, we
 // can declare array lengths as any constant integer width, which breaks when
 // attempting a direct comparison to an array header's uint32.

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/CovenantSQL/HashStablePack/msgp"
+	"github.com/CovenantSQL/HashStablePack/hsp"
 )
 
 func marshal(w io.Writer) *marshalGen {
@@ -46,14 +46,14 @@ func (m *marshalGen) Execute(p Elem) error {
 
 	m.p.printf("\nfunc (%s %s) MarshalHash() (o []byte, err error) {", p.Varname(), imutMethodReceiver(p))
 	m.p.printf("\nvar b []byte")
-	m.p.printf("\no = msgp.Require(b, %s.Msgsize())", c)
+	m.p.printf("\no = hsp.Require(b, %s.Msgsize())", c)
 	next(m, p)
 	m.p.nakedReturn()
 	return m.p.err
 }
 
 func (m *marshalGen) rawAppend(typ string, argfmt string, arg interface{}) {
-	m.p.printf("\no = msgp.Append%s(o, %s)", typ, fmt.Sprintf(argfmt, arg))
+	m.p.printf("\no = hsp.Append%s(o, %s)", typ, fmt.Sprintf(argfmt, arg))
 }
 
 func (m *marshalGen) fuseHook() {
@@ -86,7 +86,7 @@ func (m *marshalGen) gStruct(s *Struct) {
 
 func (m *marshalGen) tuple(s *Struct) {
 	data := make([]byte, 0, 5)
-	data = msgp.AppendArrayHeader(data, uint32(len(s.Fields)))
+	data = hsp.AppendArrayHeader(data, uint32(len(s.Fields)))
 	m.p.printf("\n// array header, size %d", len(s.Fields))
 	m.Fuse(data)
 	if len(s.Fields) == 0 {
@@ -102,7 +102,7 @@ func (m *marshalGen) tuple(s *Struct) {
 
 func (m *marshalGen) mapstruct(s *Struct) {
 	data := make([]byte, 0, 64)
-	data = msgp.AppendMapHeader(data, uint32(len(s.Fields)))
+	data = hsp.AppendMapHeader(data, uint32(len(s.Fields)))
 	m.p.printf("\n// map header, size %d", len(s.Fields))
 	m.Fuse(data)
 	if len(s.Fields) == 0 {
@@ -112,7 +112,7 @@ func (m *marshalGen) mapstruct(s *Struct) {
 		if !m.p.ok() {
 			return
 		}
-		//data = msgp.AppendString(nil, s.Fields[i].FieldTag)
+		//data = hsp.AppendString(nil, s.Fields[i].FieldTag)
 		//
 		//m.p.printf("\n// string %q", s.Fields[i].FieldTag)
 		m.Fuse(data)
@@ -172,7 +172,7 @@ func (m *marshalGen) gPtr(p *Ptr) {
 		return
 	}
 	m.fuseHook()
-	m.p.printf("\nif %s == nil {\no = msgp.AppendNil(o)\n} else {", p.Varname())
+	m.p.printf("\nif %s == nil {\no = hsp.AppendNil(o)\n} else {", p.Varname())
 	next(m, p.Value)
 	m.p.closeblock()
 }
@@ -202,11 +202,11 @@ func (m *marshalGen) gBase(b *BaseElem) {
 			if oTemp, err := %s.MarshalHash(); err != nil {
 				return nil, err
 			} else {
-				o = msgp.AppendBytes(o, oTemp)
+				o = hsp.AppendBytes(o, oTemp)
 			}`, vname)
 	case Intf, Ext:
 		echeck = true
-		m.p.printf("\no, err = msgp.Append%s(o, %s)", b.BaseName(), vname)
+		m.p.printf("\no, err = hsp.Append%s(o, %s)", b.BaseName(), vname)
 	default:
 		m.rawAppend(b.BaseName(), literalFmt, vname)
 	}

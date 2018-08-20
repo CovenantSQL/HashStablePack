@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-//go:generate msgp
+//go:generate hsp
 
 // Issue 94: shims were not propogated recursively,
 // which caused shims that weren't at the top level
@@ -16,7 +16,7 @@ import (
 
 //go:generate ./search.sh $GOFILE timetostr
 
-//msgp:shim time.Time as:string using:timetostr/strtotime
+//hsp:shim time.Time as:string using:timetostr/strtotime
 type T struct {
 	T time.Time
 }

@@ -2,10 +2,10 @@ package _generated
 
 import "errors"
 
-//go:generate msgp
+//go:generate hsp
 
-//msgp:shim ConvertStringVal as:string using:fromConvertStringVal/toConvertStringVal mode:convert
-//msgp:ignore ConvertStringVal
+//hsp:shim ConvertStringVal as:string using:fromConvertStringVal/toConvertStringVal mode:convert
+//hsp:ignore ConvertStringVal
 
 func fromConvertStringVal(v ConvertStringVal) (string, error) {
 	return string(v), nil
@@ -29,8 +29,8 @@ type ConvertStringMapValue struct {
 	Strings map[string]ConvertStringVal
 }
 
-//msgp:shim ConvertIntfVal as:interface{} using:fromConvertIntfVal/toConvertIntfVal mode:convert
-//msgp:ignore ConvertIntfVal
+//hsp:shim ConvertIntfVal as:interface{} using:fromConvertIntfVal/toConvertIntfVal mode:convert
+//hsp:ignore ConvertIntfVal
 
 func fromConvertIntfVal(v ConvertIntfVal) (interface{}, error) {
 	return v.Test, nil
@@ -48,8 +48,8 @@ type ConvertIntf struct {
 	Intf ConvertIntfVal
 }
 
-//msgp:shim ConvertErrVal as:string using:fromConvertErrVal/toConvertErrVal mode:convert
-//msgp:ignore ConvertErrVal
+//hsp:shim ConvertErrVal as:string using:fromConvertErrVal/toConvertErrVal mode:convert
+//hsp:ignore ConvertErrVal
 
 var (
 	errConvertFrom = errors.New("error: convert from")

@@ -8,7 +8,7 @@ import (
 	"github.com/CovenantSQL/HashStablePack/gen"
 )
 
-const linePrefix = "//msgp:"
+const linePrefix = "//hsp:"
 
 // func(args, fileset)
 type directive func([]string, *FileSet) error
@@ -40,7 +40,7 @@ func passignore(m gen.Method, text []string, p *gen.Printer) error {
 	return nil
 }
 
-// find all comment lines that begin with //msgp:
+// find all comment lines that begin with //hsp:
 func yieldComments(c []*ast.CommentGroup) []string {
 	var out []string
 	for _, cg := range c {
@@ -53,7 +53,7 @@ func yieldComments(c []*ast.CommentGroup) []string {
 	return out
 }
 
-//msgp:shim {Type} as:{Newtype} using:{toFunc/fromFunc} mode:{Mode}
+//hsp:shim {Type} as:{Newtype} using:{toFunc/fromFunc} mode:{Mode}
 func applyShim(text []string, f *FileSet) error {
 	if len(text) < 4 || len(text) > 5 {
 		return fmt.Errorf("shim directive should have 3 or 4 arguments; found %d", len(text)-1)
@@ -95,7 +95,7 @@ func applyShim(text []string, f *FileSet) error {
 	return nil
 }
 
-//msgp:ignore {TypeA} {TypeB}...
+//hsp:ignore {TypeA} {TypeB}...
 func ignore(text []string, f *FileSet) error {
 	if len(text) < 2 {
 		return nil
@@ -110,7 +110,7 @@ func ignore(text []string, f *FileSet) error {
 	return nil
 }
 
-//msgp:tuple {TypeA} {TypeB}...
+//hsp:tuple {TypeA} {TypeB}...
 func astuple(text []string, f *FileSet) error {
 	if len(text) < 2 {
 		return nil

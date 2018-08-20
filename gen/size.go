@@ -5,7 +5,7 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/CovenantSQL/HashStablePack/msgp"
+	"github.com/CovenantSQL/HashStablePack/hsp"
 )
 
 type sizeState uint8
@@ -41,7 +41,7 @@ func (s *sizeGen) Apply(dirs []string) error {
 }
 
 func builtinSize(typ string) string {
-	return "msgp." + typ + "Size"
+	return "hsp." + typ + "Size"
 }
 
 // this lets us chain together addition
@@ -97,7 +97,7 @@ func (s *sizeGen) gStruct(st *Struct) {
 	nfields := uint32(len(st.Fields))
 
 	if st.AsTuple {
-		data := msgp.AppendArrayHeader(nil, nfields)
+		data := hsp.AppendArrayHeader(nil, nfields)
 		s.addConstant(strconv.Itoa(len(data)))
 		for i := range st.Fields {
 			if !s.p.ok() {
@@ -106,11 +106,11 @@ func (s *sizeGen) gStruct(st *Struct) {
 			next(s, st.Fields[i].FieldElem)
 		}
 	} else {
-		data := msgp.AppendMapHeader(nil, nfields)
+		data := hsp.AppendMapHeader(nil, nfields)
 		s.addConstant(strconv.Itoa(len(data)))
 		for i := range st.Fields {
 			data = data[:0]
-			data = msgp.AppendString(data, st.Fields[i].FieldTag)
+			data = hsp.AppendString(data, st.Fields[i].FieldTag)
 			s.addConstant(strconv.Itoa(len(data)))
 			next(s, st.Fields[i].FieldElem)
 		}
@@ -119,7 +119,7 @@ func (s *sizeGen) gStruct(st *Struct) {
 
 func (s *sizeGen) gPtr(p *Ptr) {
 	s.state = add // inner must use add
-	s.p.printf("\nif %s == nil {\ns += msgp.NilSize\n} else {", p.Varname())
+	s.p.printf("\nif %s == nil {\ns += hsp.NilSize\n} else {", p.Varname())
 	next(s, p.Value)
 	s.state = add // closing block; reset to add
 	s.p.closeblock()
@@ -172,7 +172,7 @@ func (s *sizeGen) gMap(m *Map) {
 	s.p.printf("\nif %s != nil {", vn)
 	s.p.printf("\nfor %s, %s := range %s {", m.Keyidx, m.Validx, vn)
 	s.p.printf("\n_ = %s", m.Validx) // we may not use the value
-	s.p.printf("\ns += msgp.StringPrefixSize + len(%s)", m.Keyidx)
+	s.p.printf("\ns += hsp.StringPrefixSize + len(%s)", m.Keyidx)
 	s.state = expr
 	next(s, m.Value)
 	s.p.closeblock()
@@ -255,11 +255,11 @@ func fixedsizeExpr(e Elem) (string, bool) {
 			}
 		}
 		var hdrlen int
-		mhdr := msgp.AppendMapHeader(nil, uint32(len(e.Fields)))
+		mhdr := hsp.AppendMapHeader(nil, uint32(len(e.Fields)))
 		hdrlen += len(mhdr)
 		var strbody []byte
 		for _, f := range e.Fields {
-			strbody = msgp.AppendString(strbody[:0], f.FieldTag)
+			strbody = hsp.AppendString(strbody[:0], f.FieldTag)
 			hdrlen += len(strbody)
 		}
 		return fmt.Sprintf("%d + %s", hdrlen, str), true
@@ -271,15 +271,15 @@ func fixedsizeExpr(e Elem) (string, bool) {
 func basesizeExpr(value Primitive, vname, basename string) string {
 	switch value {
 	case Ext:
-		return "msgp.ExtensionPrefixSize + " + stripRef(vname) + ".Len()"
+		return "hsp.ExtensionPrefixSize + " + stripRef(vname) + ".Len()"
 	case Intf:
-		return "msgp.GuessSize(" + vname + ")"
+		return "hsp.GuessSize(" + vname + ")"
 	case IDENT:
 		return vname + ".Msgsize()"
 	case Bytes:
-		return "msgp.BytesPrefixSize + len(" + vname + ")"
+		return "hsp.BytesPrefixSize + len(" + vname + ")"
 	case String:
-		return "msgp.StringPrefixSize + len(" + vname + ")"
+		return "hsp.StringPrefixSize + len(" + vname + ")"
 	default:
 		return builtinSize(basename)
 	}

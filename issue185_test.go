@@ -19,11 +19,11 @@ import (
 // When stuff's going wrong, you'll be glad this is here!
 const debugTemp = false
 
-// Ensure that consistent identifiers are generated on a per-method basis by msgp.
+// Ensure that consistent identifiers are generated on a per-method basis by hsp.
 //
 // Also ensure that no duplicate identifiers appear in a method.
 //
-// structs are currently processed alphabetically by msgp. this test relies on
+// structs are currently processed alphabetically by hsp. this test relies on
 // that property.
 //
 func TestIssue185Idents(t *testing.T) {
@@ -136,7 +136,7 @@ func TestIssue185Overlap(t *testing.T) {
 }
 
 func loadVars(tpl *template.Template, tplData interface{}) (vars extractedVars, err error) {
-	tempDir, err := ioutil.TempDir("", "msgp-")
+	tempDir, err := ioutil.TempDir("", "hsp-")
 	if err != nil {
 		err = fmt.Errorf("could not create temp dir: %v", err)
 		return
@@ -243,7 +243,7 @@ func goGenerateTpl(cwd, tfile string, tpl *template.Template, tplData interface{
 var issue185IdentsTpl = template.Must(template.New("").Parse(`
 package issue185
 
-//go:generate msgp
+//go:generate hsp
 
 type Test1 struct {
 	Foo string
@@ -262,7 +262,7 @@ type Test2 struct {
 var issue185ComplexIdentsTpl = template.Must(template.New("").Parse(`
 package issue185
 
-//go:generate msgp
+//go:generate hsp
 
 type Test1 struct {
 	Foo string

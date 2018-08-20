@@ -82,11 +82,11 @@ func strtoMeth(s string) Method {
 }
 
 const (
-	Decode      Method                       = 1 << iota // msgp.Decodable
-	Encode                                               // msgp.Encodable
-	Marshal                                              // msgp.Marshaler
-	Unmarshal                                            // msgp.Unmarshaler
-	Size                                                 // msgp.Sizer
+	Decode      Method                       = 1 << iota // hsp.Decodable
+	Encode                                               // hsp.Encodable
+	Marshal                                              // hsp.Marshaler
+	Unmarshal                                            // hsp.Unmarshaler
+	Size                                                 // hsp.Sizer
 	Test                                                 // generate tests
 	invalidmeth                                          // this isn't a method
 	encodetest  = Encode | Decode | Test                 // tests for Encodable and Decodable
@@ -318,7 +318,7 @@ func (p *printer) resizeSlice(size string, s *Slice) {
 }
 
 func (p *printer) arrayCheck(want string, got string) {
-	p.printf("\nif %[1]s != %[2]s { err = msgp.ArrayError{Wanted: %[2]s, Got: %[1]s}; return }", got, want)
+	p.printf("\nif %[1]s != %[2]s { err = hsp.ArrayError{Wanted: %[2]s, Got: %[1]s}; return }", got, want)
 }
 
 func (p *printer) closeblock() { p.print("\n}") }
