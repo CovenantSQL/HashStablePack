@@ -99,7 +99,7 @@ func generate(f *parse.FileSet, mode gen.Method) (*bytes.Buffer, *bytes.Buffer, 
 		testbuf = bytes.NewBuffer(make([]byte, 0, 4096))
 		writePkgHeader(testbuf, f.Package)
 		if mode&(gen.Encode|gen.Decode) != 0 {
-			writeImportHeader(testbuf, "bytes", "github.com/CovenantSQL/HashStablePack/msgp", "testing")
+			writeImportHeader(testbuf, "bytes", "crypto/rand", "github.com/CovenantSQL/HashStablePack/msgp", "testing")
 		} else {
 			writeImportHeader(testbuf, "github.com/CovenantSQL/HashStablePack/msgp", "testing")
 		}
