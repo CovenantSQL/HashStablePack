@@ -103,4 +103,8 @@ type Struct struct {
 ```
 As long as the declarations of `MyInt` and `Data` are in the same file as `Struct`, the parser will determine that the type information for `MyInt` and `Data` can be passed into the definition of `Struct` before its methods are generated.
 
+### License
+
+This lib is inspired by https://github.com/tinylib/msgp
+Most Code is diverted from https://github.com/tinylib/msgp, but It's an total different lib for usage. So I created a new project instead of forking it.
 
