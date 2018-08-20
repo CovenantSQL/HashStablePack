@@ -226,15 +226,15 @@ func (z Person1) MarshalHash() (o []byte, err error) {
 	o = append(o, 0x83, 0x83)
 	o = hsp.AppendString(o, z.Name1)
 	o = append(o, 0x83)
-	o = hsp.AppendString(o, z.Address1)
-	o = append(o, 0x83)
 	o = hsp.AppendInt(o, z.Age1)
+	o = append(o, 0x83)
+	o = hsp.AppendString(o, z.Address1)
 	return
 }
 
 // Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message
 func (z Person1) Msgsize() (s int) {
-	s = 1 + 6 + hsp.StringPrefixSize + len(z.Name1) + 9 + hsp.StringPrefixSize + len(z.Address1) + 5 + hsp.IntSize
+	s = 1 + 6 + hsp.StringPrefixSize + len(z.Name1) + 5 + hsp.IntSize + 9 + hsp.StringPrefixSize + len(z.Address1)
 	return
 }
 

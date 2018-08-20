@@ -1,6 +1,8 @@
 Hash Stable Pack
 =======
-This is a code generation tool and serialization library for Calculation of Stable Hash for content. Basically it will generate an `MarshalHash` method which follow the MessagePack but **without the key**. That is the following 2 structs `MarshalHash` will produce the same bytes array:
+This is a code generation tool and serialization library for Calculation of Stable Hash for content. Basically it will generate an `MarshalHash` method which follow the MessagePack but **without the key**. 
+
+That is the following 2 structs with different member name
 
 ```go
 package person
@@ -13,6 +15,7 @@ type Person1 struct {
 	unexported1 bool             // this field is ignored
 }
 
+// Same struct with "string, string, int, bool"
 type Person2 struct {
 	Name2       string 
 	Address2    string 
@@ -20,6 +23,8 @@ type Person2 struct {
 	unexported2 bool             // this field is ignored
 }
 ```
+
+But with the same type and content of exported member, `MarshalHash` will produce the same bytes array:
 ```go
 package person
 
@@ -53,8 +58,10 @@ func TestMarshalHashAccountStable3(t *testing.T) {
 		t.Fatal("hash not stable")
 	}
 }
-
 ```
+the order of struct member is important,
+
+
 
 You can read more about MessagePack [in the wiki](http://github.com/tinylib/msgp/wiki), or at [msgpack.org](http://msgpack.org).
 
