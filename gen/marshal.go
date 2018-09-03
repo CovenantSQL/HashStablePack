@@ -3,9 +3,9 @@ package gen
 import (
 	"fmt"
 	"io"
+	"sort"
 
 	"github.com/CovenantSQL/HashStablePack/marshalhash"
-	"github.com/golang/go/src/sort"
 )
 
 func marshal(w io.Writer) *marshalGen {
