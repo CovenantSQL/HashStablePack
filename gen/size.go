@@ -235,7 +235,7 @@ func fixedsizeExpr(e Elem) (string, bool) {
 	switch e := e.(type) {
 	case *Array:
 		if str, ok := fixedsizeExpr(e.Els); ok {
-			return fmt.Sprintf("(%s * (%s))", e.Size, str), true
+			return fmt.Sprintf("(int(%s) * (%s))", e.Size, str), true
 		}
 	case *BaseElem:
 		if fixedSize(e.Value) {
