@@ -367,13 +367,7 @@ func (s *Struct) TypeName() string {
 	if s.common.alias != "" {
 		return s.common.alias
 	}
-	str := "struct{\n"
-	for i := range s.Fields {
-		str += s.Fields[i].FieldName +
-			" " + s.Fields[i].FieldElem.TypeName() +
-			" " + s.Fields[i].RawTag + ";\n"
-	}
-	str += "}"
+	str := "struct{}"
 	s.common.Alias(str)
 	return s.common.alias
 }
