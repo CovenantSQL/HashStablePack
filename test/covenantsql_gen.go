@@ -25,7 +25,7 @@ func (z *HeaderTest) MarshalHash() (o []byte, err error) {
 	var b []byte
 	o = hsp.Require(b, z.Msgsize())
 	// map header, size 8
-	o = append(o, 0x88, 0x88)
+	o = append(o, 0x88)
 	if z.MerkleRoot == nil {
 		o = hsp.AppendNil(o)
 	} else {
@@ -42,7 +42,6 @@ func (z *HeaderTest) MarshalHash() (o []byte, err error) {
 			}
 		}
 	}
-	o = append(o, 0x88)
 	o = hsp.AppendArrayHeader(o, uint32(len(z.ParentHash)))
 	for za0002 := range z.ParentHash {
 		if z.ParentHash[za0002] == nil {
@@ -55,9 +54,7 @@ func (z *HeaderTest) MarshalHash() (o []byte, err error) {
 			}
 		}
 	}
-	o = append(o, 0x88)
 	o = hsp.AppendBytes(o, z.TestArray)
-	o = append(o, 0x88)
 	o = hsp.AppendArrayHeader(o, uint32(len(z.GenesisHash)))
 	for za0001 := range z.GenesisHash {
 		if oTemp, err := z.GenesisHash[za0001].MarshalHash(); err != nil {
@@ -66,17 +63,13 @@ func (z *HeaderTest) MarshalHash() (o []byte, err error) {
 			o = hsp.AppendBytes(o, oTemp)
 		}
 	}
-	o = append(o, 0x88)
 	o = hsp.AppendInt32(o, z.Version)
-	o = append(o, 0x88)
 	if oTemp, err := z.Producer.MarshalHash(); err != nil {
 		return nil, err
 	} else {
 		o = hsp.AppendBytes(o, oTemp)
 	}
-	o = append(o, 0x88)
 	o = hsp.AppendString(o, z.TestName)
-	o = append(o, 0x88)
 	o = hsp.AppendTime(o, z.Timestamp)
 	return
 }
@@ -117,7 +110,7 @@ func (z *HeaderTest2) MarshalHash() (o []byte, err error) {
 	var b []byte
 	o = hsp.Require(b, z.Msgsize())
 	// map header, size 8
-	o = append(o, 0x88, 0x88)
+	o = append(o, 0x88)
 	if z.MerkleRoot2 == nil {
 		o = hsp.AppendNil(o)
 	} else {
@@ -134,7 +127,6 @@ func (z *HeaderTest2) MarshalHash() (o []byte, err error) {
 			}
 		}
 	}
-	o = append(o, 0x88)
 	o = hsp.AppendArrayHeader(o, uint32(len(z.ParentHash2)))
 	for za0002 := range z.ParentHash2 {
 		if z.ParentHash2[za0002] == nil {
@@ -147,9 +139,7 @@ func (z *HeaderTest2) MarshalHash() (o []byte, err error) {
 			}
 		}
 	}
-	o = append(o, 0x88)
 	o = hsp.AppendBytes(o, z.TestArray2)
-	o = append(o, 0x88)
 	o = hsp.AppendArrayHeader(o, uint32(len(z.GenesisHash2)))
 	for za0001 := range z.GenesisHash2 {
 		if oTemp, err := z.GenesisHash2[za0001].MarshalHash(); err != nil {
@@ -158,17 +148,13 @@ func (z *HeaderTest2) MarshalHash() (o []byte, err error) {
 			o = hsp.AppendBytes(o, oTemp)
 		}
 	}
-	o = append(o, 0x88)
 	o = hsp.AppendInt32(o, z.Version2)
-	o = append(o, 0x88)
 	if oTemp, err := z.Producer2.MarshalHash(); err != nil {
 		return nil, err
 	} else {
 		o = hsp.AppendBytes(o, oTemp)
 	}
-	o = append(o, 0x88)
 	o = hsp.AppendString(o, z.TestName2)
-	o = append(o, 0x88)
 	o = hsp.AppendTime(o, z.Timestamp2)
 	return
 }
@@ -223,17 +209,14 @@ func (z *Person1) MarshalHash() (o []byte, err error) {
 	var b []byte
 	o = hsp.Require(b, z.Msgsize())
 	// map header, size 4
-	o = append(o, 0x84, 0x84)
-	o = hsp.AppendInt(o, z.Age1)
 	o = append(o, 0x84)
+	o = hsp.AppendInt(o, z.Age1)
 	o = hsp.AppendMapHeader(o, uint32(len(z.Map)))
 	for za0001, za0002 := range z.Map {
 		o = hsp.AppendString(o, za0001)
 		o = hsp.AppendInt(o, za0002)
 	}
-	o = append(o, 0x84)
 	o = hsp.AppendString(o, z.Name1)
-	o = append(o, 0x84)
 	o = hsp.AppendString(o, z.Address1)
 	return
 }
@@ -256,17 +239,14 @@ func (z *Person2) MarshalHash() (o []byte, err error) {
 	var b []byte
 	o = hsp.Require(b, z.Msgsize())
 	// map header, size 4
-	o = append(o, 0x84, 0x84)
-	o = hsp.AppendInt(o, z.Age2)
 	o = append(o, 0x84)
+	o = hsp.AppendInt(o, z.Age2)
 	o = hsp.AppendMapHeader(o, uint32(len(z.Map)))
 	for za0001, za0002 := range z.Map {
 		o = hsp.AppendString(o, za0001)
 		o = hsp.AppendInt(o, za0002)
 	}
-	o = append(o, 0x84)
 	o = hsp.AppendString(o, z.Name2)
-	o = append(o, 0x84)
 	o = hsp.AppendString(o, z.Address2)
 	return
 }
@@ -289,14 +269,12 @@ func (z *Struct) MarshalHash() (o []byte, err error) {
 	var b []byte
 	o = hsp.Require(b, z.Msgsize())
 	// map header, size 3
-	o = append(o, 0x83, 0x83)
-	o = hsp.AppendBytes(o, []byte(z.Other))
 	o = append(o, 0x83)
+	o = hsp.AppendBytes(o, []byte(z.Other))
 	o = hsp.AppendArrayHeader(o, uint32(Eight))
 	for za0003 := range z.Nums {
 		o = hsp.AppendFloat64(o, z.Nums[za0003])
 	}
-	o = append(o, 0x83)
 	o = hsp.AppendMapHeader(o, uint32(len(z.Which)))
 	for za0001, za0002 := range z.Which {
 		o = hsp.AppendString(o, za0001)
@@ -311,7 +289,7 @@ func (z *Struct) MarshalHash() (o []byte, err error) {
 
 // Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message
 func (z *Struct) Msgsize() (s int) {
-	s = 1 + 6 + hsp.BytesPrefixSize + len([]byte(z.Other)) + 5 + hsp.ArrayHeaderSize + (Eight * (hsp.Float64Size)) + 6 + hsp.MapHeaderSize
+	s = 1 + 6 + hsp.BytesPrefixSize + len([]byte(z.Other)) + 5 + hsp.ArrayHeaderSize + (int(Eight) * (hsp.Float64Size)) + 6 + hsp.MapHeaderSize
 	if z.Which != nil {
 		for za0001, za0002 := range z.Which {
 			_ = za0002

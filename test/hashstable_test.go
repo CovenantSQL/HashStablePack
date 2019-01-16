@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 	"time"
-	"gitlab.com/thunderdb/ThunderDB/crypto/hash"
+	"github.com/CovenantSQL/CovenantSQL/crypto/hash"
 )
 
 // test different type and member name but same data type and content hash identical

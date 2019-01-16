@@ -124,7 +124,7 @@ func (m *marshalGen) mapstruct(s *Struct) {
 		//data = hsp.AppendString(nil, s.Fields[i].FieldTag)
 		//
 		//m.p.printf("\n// string %q", s.Fields[i].FieldTag)
-		m.Fuse(data)
+		//m.Fuse(data)
 
 		next(m, s.Fields[i].FieldElem)
 	}

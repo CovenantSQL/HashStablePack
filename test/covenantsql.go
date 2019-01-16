@@ -1,8 +1,8 @@
 package covenant
 
 import (
-	"gitlab.com/thunderdb/ThunderDB/proto"
-	"gitlab.com/thunderdb/ThunderDB/crypto/hash"
+	"github.com/CovenantSQL/CovenantSQL/crypto/hash"
+	"github.com/CovenantSQL/CovenantSQL/proto"
 	"time"
 )
 
