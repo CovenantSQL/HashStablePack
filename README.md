@@ -9,7 +9,7 @@ This is a code generation tool and serialization library for Calculation of Stab
 ### How?
 
 That is the following 2 structs with different member name
-
+For more: see [Spec in Chinese](spec.md)
 ```go
 package person
 
