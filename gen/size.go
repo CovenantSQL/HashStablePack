@@ -41,7 +41,7 @@ func (s *sizeGen) Apply(dirs []string) error {
 }
 
 func builtinSize(typ string) string {
-	return "hsp." + typ + "Size"
+	return "hspEncoder.typeSizes." + typ + "Size"
 }
 
 // this lets us chain together addition
@@ -53,11 +53,11 @@ func (s *sizeGen) addConstant(sz string) {
 
 	switch s.state {
 	case assign:
-		s.p.print("\ns = " + sz)
+		s.p.print("\n	size = " + sz)
 		s.state = expr
 		return
 	case add:
-		s.p.print("\ns += " + sz)
+		s.p.print("\n	size += " + sz)
 		s.state = expr
 		return
 	case expr:
@@ -80,12 +80,16 @@ func (s *sizeGen) Execute(p Elem) error {
 		return nil
 	}
 
-	s.p.comment("Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message")
+	// function header
+	s.p.printf("\n// %sMsgsize function", p.TypeName())
+	s.p.printf("\nexport function %sMsgSize(%s) {", p.TypeName(), p.Varname())
+	s.p.printf("\n	let size = 0")
 
-	s.p.printf("\nfunc (%s %s) Msgsize() (s int) {", p.Varname(), imutMethodReceiver(p))
 	s.state = assign
 	next(s, p)
-	s.p.nakedReturn()
+
+	// return size
+	s.p.printf("\n	return size\n}")
 	return s.p.err
 }
 
@@ -277,9 +281,9 @@ func basesizeExpr(value Primitive, vname, basename string) string {
 	case IDENT:
 		return vname + ".Msgsize()"
 	case Bytes:
-		return "hsp.BytesPrefixSize + len(" + vname + ")"
+		return "hspEncoder.typeSizes.BytesPrefixSize + " + vname + ".length"
 	case String:
-		return "hsp.StringPrefixSize + len(" + vname + ")"
+		return "hspEncoder.typeSizes.StringPrefixSize + " + vname + ".length"
 	default:
 		return builtinSize(basename)
 	}

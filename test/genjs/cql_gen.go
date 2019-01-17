@@ -52,8 +52,9 @@ export function PersonMarshalHash(z) {
 	return hash
 }
 
-// Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message
-func (z *Person) Msgsize() (s int) {
-s = 1 + 3 + hsp.Float32Size + 3 + hsp.Float64Size + 5 + hsp.IntSize + 6 + hsp.Int16Size + 6 + hsp.Int32Size + 6 + hsp.Int64Size + 5 + hsp.Int8Size + 5 + hsp.StringPrefixSize + len(z.Name) + 4 + hsp.UintSize + 7 + hsp.Uint16Size + 7 + hsp.Uint32Size + 7 + hsp.Uint64Size + 6 + hsp.Uint8Size
-return
+// PersonMsgsize function
+export function PersonMsgSize(z) {
+	let size = 0
+	size = 1 + 3 + hspEncoder.typeSizes.Float32Size + 3 + hspEncoder.typeSizes.Float64Size + 5 + hspEncoder.typeSizes.IntSize + 6 + hspEncoder.typeSizes.Int16Size + 6 + hspEncoder.typeSizes.Int32Size + 6 + hspEncoder.typeSizes.Int64Size + 5 + hspEncoder.typeSizes.Int8Size + 5 + hspEncoder.typeSizes.StringPrefixSize + z.Name.length + 4 + hspEncoder.typeSizes.UintSize + 7 + hspEncoder.typeSizes.Uint16Size + 7 + hspEncoder.typeSizes.Uint32Size + 7 + hspEncoder.typeSizes.Uint64Size + 6 + hspEncoder.typeSizes.Uint8Size
+	return size
 }

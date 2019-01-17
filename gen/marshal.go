@@ -46,16 +46,14 @@ func (m *marshalGen) Execute(p Elem) error {
 		return nil
 	}
 
-	classname := p.TypeName() + "MarshalHash"
-	m.p.comment(classname + " function")
-
 	// save the vname before
 	// calling methodReceiver so
 	// that z.Msgsize() is printed correctly
 	// c := p.Varname()
 
 	// function header
-	m.p.printf("\nexport function %s(%s) {", classname, p.Varname())
+	m.p.printf("\n// %sMarshalHash function", p.TypeName())
+	m.p.printf("\nexport function %sMarshalHash(%s) {", p.TypeName(), p.Varname())
 	m.p.printf("\n	let binary = []\n")
 	// m.p.printf("\n  o = hsp.Require(b, %s.Msgsize())", c)
 	next(m, p)
