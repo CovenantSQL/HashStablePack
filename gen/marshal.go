@@ -59,7 +59,7 @@ func (m *marshalGen) Execute(p Elem) error {
 	next(m, p)
 
 	// convert to Uint8Array and return
-	m.p.printf("\n\n	const hash = new Uint8Array(b)")
+	m.p.printf("\n	const hash = new Uint8Array(b)")
 	m.p.printf("\n	return hash\n}\n")
 	return m.p.err
 }
@@ -215,12 +215,13 @@ func (m *marshalGen) gBase(b *BaseElem) {
 	var echeck bool
 	switch b.Value {
 	case IDENT:
+		m.p.printf("	// encode imported type")
 		m.p.printf(`
-			if oTemp, err := %s.MarshalHash(); err != nil {
-				return nil, err
-			} else {
-				o = hsp.AppendBytes(o, oTemp)
-			}`, vname)
+	if oTemp, err := %s.MarshalHash(); err != nil {
+		return nil, err
+	} else {
+		o = hsp.AppendBytes(o, oTemp)
+	}`, vname)
 	case Intf, Ext:
 		echeck = true
 		m.p.printf("\no, err = hsp.Append%s(o, %s)", b.BaseName(), vname)
