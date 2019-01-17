@@ -57,11 +57,11 @@ func (m Method) String() string {
 }
 
 const (
-	Marshal     Method = 1 << iota // hsp.Marshaler
-	Size                           // hsp.Sizer
-	Test                           // generate tests
-	invalidmeth                    // this isn't a method
-	marshaltest = Marshal | Test   // tests for Marshaler and Unmarshaler
+	Marshal     Method           = 1 << iota // hsp.Marshaler
+	Size                                     // hsp.Sizer
+	Test                                     // generate tests
+	invalidmeth                              // this isn't a method
+	marshaltest = Marshal | Test             // tests for Marshaler and Unmarshaler
 )
 
 type Printer struct {

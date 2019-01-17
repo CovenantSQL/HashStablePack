@@ -37,7 +37,7 @@ import (
 var (
 	out        = flag.String("o", "", "output file")
 	file       = flag.String("file", "", "input file")
-	tests      = flag.Bool("tests", true, "create tests and benchmarks")
+	tests      = flag.Bool("tests", false, "create tests and benchmarks")
 	unexported = flag.Bool("unexported", false, "also process unexported types")
 )
 

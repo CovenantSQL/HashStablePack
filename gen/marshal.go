@@ -46,23 +46,29 @@ func (m *marshalGen) Execute(p Elem) error {
 		return nil
 	}
 
-	m.p.comment("MarshalHash marshals for hash")
+	classname := p.TypeName() + "MarshalHash"
+	m.p.comment(classname + " function")
 
 	// save the vname before
 	// calling methodReceiver so
 	// that z.Msgsize() is printed correctly
-	c := p.Varname()
+	// c := p.Varname()
 
-	m.p.printf("\nfunc (%s %s) MarshalHash() (o []byte, err error) {", p.Varname(), imutMethodReceiver(p))
-	m.p.printf("\nvar b []byte")
-	m.p.printf("\no = hsp.Require(b, %s.Msgsize())", c)
+	// function header
+	m.p.printf("\nexport function %s(%s) {", classname, p.Varname())
+	m.p.printf("\n	let binary = []\n")
+	// m.p.printf("\n  o = hsp.Require(b, %s.Msgsize())", c)
 	next(m, p)
-	m.p.nakedReturn()
+
+	// convert to Uint8Array and return
+	m.p.printf("\n\n	const hash = new Uint8Array(b)")
+	m.p.printf("\n	return hash\n}\n")
 	return m.p.err
 }
 
 func (m *marshalGen) rawAppend(typ string, argfmt string, arg interface{}) {
-	m.p.printf("\no = hsp.Append%s(o, %s)", typ, fmt.Sprintf(argfmt, arg))
+	m.p.printf("\n	// encode %s with type %s", fmt.Sprintf(argfmt, arg), typ)
+	m.p.printf("\n	binary.push(hspEncoder.append%s(%s))\n", typ, fmt.Sprintf(argfmt, arg))
 }
 
 func (m *marshalGen) fuseHook() {
@@ -81,6 +87,7 @@ func (m *marshalGen) Fuse(b []byte) {
 }
 
 func (m *marshalGen) gStruct(s *Struct) {
+	fmt.Println(">>>>>>>>>>>> in gStruct")
 	if !m.p.ok() {
 		return
 	}
@@ -96,7 +103,7 @@ func (m *marshalGen) gStruct(s *Struct) {
 func (m *marshalGen) tuple(s *Struct) {
 	data := make([]byte, 0, 5)
 	data = marshalhash.AppendArrayHeader(data, uint32(len(s.Fields)))
-	m.p.printf("\n// array header, size %d", len(s.Fields))
+	m.p.printf("\n	// array header, size %d", len(s.Fields))
 	m.Fuse(data)
 	if len(s.Fields) == 0 {
 		m.fuseHook()
@@ -112,7 +119,7 @@ func (m *marshalGen) tuple(s *Struct) {
 func (m *marshalGen) mapstruct(s *Struct) {
 	data := make([]byte, 0, 64)
 	data = marshalhash.AppendMapHeader(data, uint32(len(s.Fields)))
-	m.p.printf("\n// map header, size %d", len(s.Fields))
+	m.p.printf("\n	// map header, size %d", len(s.Fields))
 	m.Fuse(data)
 	if len(s.Fields) == 0 {
 		m.fuseHook()
@@ -121,6 +128,7 @@ func (m *marshalGen) mapstruct(s *Struct) {
 		if !m.p.ok() {
 			return
 		}
+		fmt.Println("process >>>>>> ", s.Fields[i].FieldElem)
 		//data = hsp.AppendString(nil, s.Fields[i].FieldTag)
 		//
 		//m.p.printf("\n// string %q", s.Fields[i].FieldTag)
@@ -132,11 +140,11 @@ func (m *marshalGen) mapstruct(s *Struct) {
 
 // append raw data
 func (m *marshalGen) rawbytes(bts []byte) {
-	m.p.print("\no = append(o, ")
+	m.p.print("\n	binary.push(")
 	for _, b := range bts {
 		m.p.printf("0x%x,", b)
 	}
-	m.p.print(")")
+	m.p.print(")\n")
 }
 
 func (m *marshalGen) gMap(s *Map) {
@@ -192,6 +200,8 @@ func (m *marshalGen) gBase(b *BaseElem) {
 	}
 	m.fuseHook()
 	vname := b.Varname()
+
+	fmt.Println("	in gBase >>>>>>", b.Value)
 
 	if b.Convert {
 		if b.ShimMode == Cast {

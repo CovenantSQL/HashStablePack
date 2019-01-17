@@ -98,27 +98,27 @@ const (
 // all of the recognized identities
 // that map to primitive types
 var primitives = map[string]Primitive{
-	"[]byte":         Bytes,
-	"string":         String,
-	"float32":        Float32,
-	"float64":        Float64,
-	"complex64":      Complex64,
-	"complex128":     Complex128,
-	"uint":           Uint,
-	"uint8":          Uint8,
-	"uint16":         Uint16,
-	"uint32":         Uint32,
-	"uint64":         Uint64,
-	"byte":           Byte,
-	"rune":           Int32,
-	"int":            Int,
-	"int8":           Int8,
-	"int16":          Int16,
-	"int32":          Int32,
-	"int64":          Int64,
-	"bool":           Bool,
-	"interface{}":    Intf,
-	"time.Time":      Time,
+	"[]byte":        Bytes,
+	"string":        String,
+	"float32":       Float32,
+	"float64":       Float64,
+	"complex64":     Complex64,
+	"complex128":    Complex128,
+	"uint":          Uint,
+	"uint8":         Uint8,
+	"uint16":        Uint16,
+	"uint32":        Uint32,
+	"uint64":        Uint64,
+	"byte":          Byte,
+	"rune":          Int32,
+	"int":           Int,
+	"int8":          Int8,
+	"int16":         Int16,
+	"int32":         Int32,
+	"int64":         Int64,
+	"bool":          Bool,
+	"interface{}":   Intf,
+	"time.Time":     Time,
 	"hsp.Extension": Ext,
 }
 
@@ -416,7 +416,6 @@ func (x *Struct) Less(i, j int) bool {
 func (x *Struct) Swap(i, j int) {
 	x.Fields[i], x.Fields[j] = x.Fields[j], x.Fields[i]
 }
-
 
 type ShimMode int
 

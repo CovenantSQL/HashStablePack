@@ -31,7 +31,6 @@ func (m *mtestGen) Execute(p Elem) error {
 
 func (m *mtestGen) Method() Method { return marshaltest }
 
-
 func init() {
 	template.Must(marshalTestTempl.Parse(`func TestMarshalHash{{.TypeName}}(t *testing.T) {
 	v := {{.TypeName}}{}
