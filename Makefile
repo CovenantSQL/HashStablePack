@@ -21,6 +21,8 @@ install: $(BIN)
 GGEN:
 	go generate ./test/covenantsql.go
 
+test-genjs:
+	go run hsp/hsp.go -file test/genjs/cql.go
 
 test: all
 	go test -v ./...
