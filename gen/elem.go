@@ -367,7 +367,13 @@ func (s *Struct) TypeName() string {
 	if s.common.alias != "" {
 		return s.common.alias
 	}
-	str := "struct{}"
+	str := "struct{\n"
+	for i := range s.Fields {
+		str += s.Fields[i].FieldName +
+			" " + s.Fields[i].FieldElem.TypeName() +
+			" " + s.Fields[i].RawTag + ";\n"
+	}
+	str += "}"
 	s.common.Alias(str)
 	return s.common.alias
 }
@@ -407,9 +413,16 @@ func (x *Struct) Len() int { return len(x.Fields) }
 
 // Less returns true if node i is less than node j.
 func (x *Struct) Less(i, j int) bool {
-	fi := x.Fields[i]
-	fj := x.Fields[j]
-	return fi.FieldElem.TypeName() < fj.FieldElem.TypeName()
+	fi := x.Fields[i].FieldTag
+	if len(fi) == 0 {
+		fi = x.Fields[i].FieldName
+	}
+	fj := x.Fields[j].FieldTag
+	if len(fj) == 0 {
+		fj = x.Fields[j].FieldName
+	}
+
+	return fi < fj
 }
 
 // Swap exchanges nodes i and j.
