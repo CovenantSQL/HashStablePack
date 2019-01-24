@@ -22,28 +22,28 @@ type Struct struct {
 
 // HeaderTest is a block header.
 type HeaderTest struct {
-	Version     int32         `hsp:"01"`
-	TestName    string        `hsp:"00"`
+	Version     int32  `hsp:"01"`
+	TestName    string `hsp:"00"`
 	TestArray   []byte
 	Producer    proto.NodeID  `hsp:"02"`
 	GenesisHash []hash.Hash   `hsp:"06"`
 	ParentHash  []*hash.Hash  `hsp:"03"`
 	MerkleRoot  *[]*hash.Hash `hsp:"05"`
 	Timestamp   time.Time     `hsp:"04"`
-	xx int
+	xx          int
 }
 
 // HeaderTest is a block header.
 type HeaderTest2 struct {
-	Version2     int32         `hsp:"01"`
-	TestName2    string        `hsp:"00"`
+	Version2     int32  `hsp:"01"`
+	TestName2    string `hsp:"00"`
 	TestArray2   []byte
 	Producer2    proto.NodeID  `hsp:"02"`
 	GenesisHash2 []hash.Hash   `hsp:"06"`
 	ParentHash2  []*hash.Hash  `hsp:"03"`
 	MerkleRoot2  *[]*hash.Hash `hsp:"05"`
 	Timestamp2   time.Time     `hsp:"04"`
-	xx int
+	xx           int
 }
 
 type Person1 struct {
@@ -58,6 +58,6 @@ type Person2 struct {
 	Name2       string
 	Address2    string
 	Age2        int
-	Map         map[string]int
+	Map222      map[string]int `hspack:"Map"`
 	unexported2 bool // this field is ignored
 }

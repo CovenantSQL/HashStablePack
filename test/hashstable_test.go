@@ -69,12 +69,14 @@ func TestMarshalHashAccountStable3(t *testing.T) {
 		Name1:       "Auxten",
 		Address1:    "@CovenantSQL.io",
 		Age1:        70,
+		Map: map[string]int{"ss": 2, "s":1, "sss":3},
 		unexported1: false,
 	}
 	p2 := Person2{
 		Name2:       "Auxten",
 		Address2:    "@CovenantSQL.io",
 		Age2:        70,
+		Map222: map[string]int{"ss": 2, "s":1, "sss":3},
 		unexported2: true,
 	}
 	bts1, err := p1.MarshalHash()
