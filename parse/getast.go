@@ -338,7 +338,7 @@ func (fs *FileSet) getField(f *ast.Field) []gen.StructField {
 	var extension bool
 	// parse tag; otherwise field name is field tag
 	if f.Tag != nil {
-		body := reflect.StructTag(strings.Trim(f.Tag.Value, "`")).Get("msg")
+		body := reflect.StructTag(strings.Trim(f.Tag.Value, "`")).Get("hsp")
 		if body == "" {
 			body = reflect.StructTag(strings.Trim(f.Tag.Value, "`")).Get("hspack")
 		}
