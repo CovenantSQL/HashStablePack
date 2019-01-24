@@ -24,14 +24,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
-	"path/filepath"
-	"strings"
-
 	"github.com/CovenantSQL/HashStablePack/gen"
 	"github.com/CovenantSQL/HashStablePack/parse"
 	"github.com/CovenantSQL/HashStablePack/printer"
 	"github.com/ttacon/chalk"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 var (
@@ -52,6 +51,10 @@ func main() {
 			os.Exit(1)
 		}
 	}
+	flag.Visit(func(f *flag.Flag) {
+		fmt.Printf("args %#v : %s", f.Name, f.Value)
+	})
+	fmt.Printf("file: %s\n", *file)
 
 	var mode gen.Method
 	mode |= gen.Marshal | gen.Size
@@ -63,6 +66,7 @@ func main() {
 		fmt.Println(chalk.Red.Color("No methods to generate; -io=false && -marshal=false"))
 		os.Exit(1)
 	}
+
 
 	if err := Run(*file, mode, *unexported); err != nil {
 		fmt.Println(chalk.Red.Color(err.Error()))

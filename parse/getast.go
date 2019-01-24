@@ -167,8 +167,15 @@ func (f *FileSet) resolve(ls linkset) {
 func (f *FileSet) process() {
 
 	deferred := make(linkset)
+
+	names := make([]string, 0, len(f.Specs))
+	for name := range f.Specs {
+		names = append(names, name)
+	}
+	sort.Strings(names)
 parse:
-	for name, def := range f.Specs {
+	for _, name := range names {
+		def := f.Specs[name]
 		pushstate(name)
 		el := f.parseExpr(def)
 		if el == nil {

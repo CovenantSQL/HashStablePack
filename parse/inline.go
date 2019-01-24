@@ -2,6 +2,7 @@ package parse
 
 import (
 	"github.com/CovenantSQL/HashStablePack/gen"
+	"sort"
 )
 
 // This file defines when and how we
@@ -31,7 +32,13 @@ const maxComplex = 5
 // begin recursive search for identities with the
 // given name and replace them with be
 func (f *FileSet) findShim(id string, be *gen.BaseElem) {
-	for name, el := range f.Identities {
+	names := make([]string, 0, len(f.Identities))
+	for name := range f.Identities {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		el := f.Identities[name]
 		pushstate(name)
 		switch el := el.(type) {
 		case *gen.Struct:
@@ -78,7 +85,13 @@ func (f *FileSet) nextShim(ref *gen.Elem, id string, be *gen.BaseElem) {
 
 // propInline identifies and inlines candidates
 func (f *FileSet) propInline() {
-	for name, el := range f.Identities {
+	names := make([]string, 0, len(f.Identities))
+	for name := range f.Identities {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		el := f.Identities[name]
 		pushstate(name)
 		switch el := el.(type) {
 		case *gen.Struct:
