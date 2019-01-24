@@ -2,51 +2,53 @@ package covenant
 
 import (
 	"bytes"
+	"github.com/CovenantSQL/CovenantSQL/crypto/hash"
 	"testing"
 	"time"
-	"github.com/CovenantSQL/CovenantSQL/crypto/hash"
 )
 
 // test different type and member name but same data type and content hash identical
 func TestMarshalHashAccountStable2(t *testing.T) {
 	tm := time.Now()
 	v1 := HeaderTest{
-		Version:     110,
-		TestName:    "31231",
-		TestArray:   []byte{0x11, 0x22},
-		Producer:    "rewqrwe",
+		Version:   110,
+		TestName:  "31231",
+		TestArray: []byte{0x11, 0x22},
+		Producer:  "rewqrwe",
 		GenesisHash: []hash.Hash{
 			{0x10},
 			{0x20},
 		},
-		ParentHash:  []*hash.Hash{
+		ParentHash: []*hash.Hash{
 			{0x10},
 			{0x20},
 		},
-		MerkleRoot:  &[]*hash.Hash{
+		MerkleRoot: &[]*hash.Hash{
 			{0x10},
 			{0x20},
 		},
-		Timestamp:   tm,
+		Timestamp: tm,
+		xx:        0,
 	}
 	v2 := HeaderTest2{
-		Version2:     110,
-		TestName2:    "31231",
-		TestArray2:   []byte{0x11, 0x22},
-		Producer2:    "rewqrwe",
+		Version2:   110,
+		TestName2:  "31231",
+		TestArray2: []byte{0x11, 0x22},
+		Producer2:  "rewqrwe",
 		GenesisHash2: []hash.Hash{
 			{0x10},
 			{0x20},
 		},
-		ParentHash2:  []*hash.Hash{
+		ParentHash2: []*hash.Hash{
 			{0x10},
 			{0x20},
 		},
-		MerkleRoot2:  &[]*hash.Hash{
+		MerkleRoot2: &[]*hash.Hash{
 			{0x10},
 			{0x20},
 		},
-		Timestamp2:   tm,
+		Timestamp2: tm,
+		xx:         1,
 	}
 	bts1, err := v1.MarshalHash()
 	if err != nil {

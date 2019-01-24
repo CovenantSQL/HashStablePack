@@ -1,9 +1,10 @@
 package covenant
 
 import (
+	"time"
+
 	"github.com/CovenantSQL/CovenantSQL/crypto/hash"
 	"github.com/CovenantSQL/CovenantSQL/proto"
-	"time"
 )
 
 //go:generate hsp
@@ -14,33 +15,35 @@ type MyInt int
 type Data []byte
 
 type Struct struct {
-	Which map[string]*MyInt `msg:"which"`
-	Other Data              `msg:"other"`
-	Nums  [Eight]float64    `msg:"nums"`
+	Which map[string]*MyInt `hsp:"2which"`
+	Other Data              `hsp:"1other"`
+	Nums  [Eight]float64    `hsp:"3nums"`
 }
 
 // HeaderTest is a block header.
 type HeaderTest struct {
-	Version     int32
-	TestName    string
+	Version     int32         `hsp:"01"`
+	TestName    string        `hsp:"00"`
 	TestArray   []byte
-	Producer    proto.NodeID
-	GenesisHash []hash.Hash
-	ParentHash  []*hash.Hash
-	MerkleRoot  *[]*hash.Hash
-	Timestamp   time.Time
+	Producer    proto.NodeID  `hsp:"02"`
+	GenesisHash []hash.Hash   `hsp:"06"`
+	ParentHash  []*hash.Hash  `hsp:"03"`
+	MerkleRoot  *[]*hash.Hash `hsp:"05"`
+	Timestamp   time.Time     `hsp:"04"`
+	xx int
 }
 
 // HeaderTest is a block header.
 type HeaderTest2 struct {
-	Version2     int32
-	TestName2    string
+	Version2     int32         `hsp:"01"`
+	TestName2    string        `hsp:"00"`
 	TestArray2   []byte
-	Producer2    proto.NodeID
-	GenesisHash2 []hash.Hash
-	ParentHash2  []*hash.Hash
-	MerkleRoot2  *[]*hash.Hash
-	Timestamp2   time.Time
+	Producer2    proto.NodeID  `hsp:"02"`
+	GenesisHash2 []hash.Hash   `hsp:"06"`
+	ParentHash2  []*hash.Hash  `hsp:"03"`
+	MerkleRoot2  *[]*hash.Hash `hsp:"05"`
+	Timestamp2   time.Time     `hsp:"04"`
+	xx int
 }
 
 type Person1 struct {
