@@ -26,8 +26,8 @@ func (z Data) Msgsize() (s int) {
 func (z *HeaderTest) MarshalHash() (o []byte, err error) {
 	var b []byte
 	o = hsp.Require(b, z.Msgsize())
-	// map header, size 8
-	o = append(o, 0x88)
+	// map header, size 9
+	o = append(o, 0x89)
 	o = hsp.AppendString(o, z.TestName)
 	o = hsp.AppendInt32(o, z.Version)
 	if oTemp, err := z.Producer.MarshalHash(); err != nil {
@@ -72,6 +72,11 @@ func (z *HeaderTest) MarshalHash() (o []byte, err error) {
 			o = hsp.AppendBytes(o, oTemp)
 		}
 	}
+	if oTemp, err := z.S.MarshalHash(); err != nil {
+		return nil, err
+	} else {
+		o = hsp.AppendBytes(o, oTemp)
+	}
 	o = hsp.AppendBytes(o, z.TestArray)
 	return
 }
@@ -103,7 +108,7 @@ func (z *HeaderTest) Msgsize() (s int) {
 	for za0001 := range z.GenesisHash {
 		s += z.GenesisHash[za0001].Msgsize()
 	}
-	s += 10 + hsp.BytesPrefixSize + len(z.TestArray)
+	s += 2 + z.S.Msgsize() + 10 + hsp.BytesPrefixSize + len(z.TestArray)
 	return
 }
 
@@ -111,8 +116,8 @@ func (z *HeaderTest) Msgsize() (s int) {
 func (z *HeaderTest2) MarshalHash() (o []byte, err error) {
 	var b []byte
 	o = hsp.Require(b, z.Msgsize())
-	// map header, size 8
-	o = append(o, 0x88)
+	// map header, size 9
+	o = append(o, 0x89)
 	o = hsp.AppendString(o, z.TestName2)
 	o = hsp.AppendInt32(o, z.Version2)
 	if oTemp, err := z.Producer2.MarshalHash(); err != nil {
@@ -157,7 +162,12 @@ func (z *HeaderTest2) MarshalHash() (o []byte, err error) {
 			o = hsp.AppendBytes(o, oTemp)
 		}
 	}
-	o = hsp.AppendBytes(o, z.TestArray2)
+	if oTemp, err := z.S.MarshalHash(); err != nil {
+		return nil, err
+	} else {
+		o = hsp.AppendBytes(o, oTemp)
+	}
+	o = hsp.AppendBytes(o, z.TestArray)
 	return
 }
 
@@ -188,7 +198,7 @@ func (z *HeaderTest2) Msgsize() (s int) {
 	for za0001 := range z.GenesisHash2 {
 		s += z.GenesisHash2[za0001].Msgsize()
 	}
-	s += 11 + hsp.BytesPrefixSize + len(z.TestArray2)
+	s += 2 + z.S.Msgsize() + 10 + hsp.BytesPrefixSize + len(z.TestArray)
 	return
 }
 
@@ -212,8 +222,8 @@ func (z *Person1) MarshalHash() (o []byte, err error) {
 	o = hsp.Require(b, z.Msgsize())
 	// map header, size 4
 	o = append(o, 0x84)
-	o = hsp.AppendString(o, z.Address1)
-	o = hsp.AppendInt(o, z.Age1)
+	o = hsp.AppendString(o, z.Address)
+	o = hsp.AppendInt(o, z.Age)
 	o = hsp.AppendMapHeader(o, uint32(len(z.Map)))
 	za0001Slice := make([]string, 0, len(z.Map))
 	for i := range z.Map {
@@ -225,20 +235,20 @@ func (z *Person1) MarshalHash() (o []byte, err error) {
 		o = hsp.AppendString(o, za0001)
 		o = hsp.AppendInt(o, za0002)
 	}
-	o = hsp.AppendString(o, z.Name1)
+	o = hsp.AppendString(o, z.Name)
 	return
 }
 
 // Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message
 func (z *Person1) Msgsize() (s int) {
-	s = 1 + 9 + hsp.StringPrefixSize + len(z.Address1) + 5 + hsp.IntSize + 4 + hsp.MapHeaderSize
+	s = 1 + 8 + hsp.StringPrefixSize + len(z.Address) + 4 + hsp.IntSize + 4 + hsp.MapHeaderSize
 	if z.Map != nil {
 		for za0001, za0002 := range z.Map {
 			_ = za0002
 			s += hsp.StringPrefixSize + len(za0001) + hsp.IntSize
 		}
 	}
-	s += 6 + hsp.StringPrefixSize + len(z.Name1)
+	s += 5 + hsp.StringPrefixSize + len(z.Name)
 	return
 }
 
@@ -248,8 +258,8 @@ func (z *Person2) MarshalHash() (o []byte, err error) {
 	o = hsp.Require(b, z.Msgsize())
 	// map header, size 4
 	o = append(o, 0x84)
-	o = hsp.AppendString(o, z.Address2)
-	o = hsp.AppendInt(o, z.Age2)
+	o = hsp.AppendString(o, z.Address)
+	o = hsp.AppendInt(o, z.Age)
 	o = hsp.AppendMapHeader(o, uint32(len(z.Map222)))
 	za0001Slice := make([]string, 0, len(z.Map222))
 	for i := range z.Map222 {
@@ -261,20 +271,20 @@ func (z *Person2) MarshalHash() (o []byte, err error) {
 		o = hsp.AppendString(o, za0001)
 		o = hsp.AppendInt(o, za0002)
 	}
-	o = hsp.AppendString(o, z.Name2)
+	o = hsp.AppendString(o, z.Name)
 	return
 }
 
 // Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message
 func (z *Person2) Msgsize() (s int) {
-	s = 1 + 9 + hsp.StringPrefixSize + len(z.Address2) + 5 + hsp.IntSize + 4 + hsp.MapHeaderSize
+	s = 1 + 8 + hsp.StringPrefixSize + len(z.Address) + 4 + hsp.IntSize + 4 + hsp.MapHeaderSize
 	if z.Map222 != nil {
 		for za0001, za0002 := range z.Map222 {
 			_ = za0002
 			s += hsp.StringPrefixSize + len(za0001) + hsp.IntSize
 		}
 	}
-	s += 6 + hsp.StringPrefixSize + len(z.Name2)
+	s += 5 + hsp.StringPrefixSize + len(z.Name)
 	return
 }
 

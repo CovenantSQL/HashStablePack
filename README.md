@@ -1,36 +1,55 @@
 Hash Stable Pack
 =======
-This is a code generation tool and serialization library for Calculation of Stable Hash for content. Basically it will generate an `MarshalHash` method which follow the MessagePack but **without the key**. 
+This is a code generation tool for **QUICK** struct content compare or hash computation. 
 
 ### For
-- Quick compare nested struct without reflection
-- Quick calculation of struct hash or signature without reflection
+- Quick compare nested struct without reflection (10~20 times faster)
 
-### How?
+    ```go
+    BenchmarkCompare/benchmark_reflect-8         	  100000	      20074 ns/op //reflect.DeepEqual
+    BenchmarkCompare/benchmark_hsp-8             	  500000	       2322 ns/op
+    BenchmarkCompare/benchmark_hsp_1_cached-8    	 1000000	       1101 ns/op
+    BenchmarkCompare/benchmark_hsp_both_cached-8   100000000	       11.2 ns/op
+    ```
+    bench cases see [here](test/hashstable_test.go)
+    
+- Quick calculation of struct hash or signature without reflection. used in [CovenantSQL](https://github.com/CovenantSQL/CovenantSQL) for block hash.
+
+### How
+
+Basically it will generate an `MarshalHash` method which follow the [MessagePack Spec](https://github.com/msgpack/msgpack/blob/master/spec.md) but :
+
+1. Without the struct key.
+1. Stable output of map.
+1. Can be used to compare different type with same hsp tag.
+
 
 That is the following 2 structs with different member name
-For more: see [Spec in Chinese](spec.md)
-```go
-package person
 
+For more: see [test cases](test)
+```go
 //go:generate hsp
+
 type Person1 struct {
-	Name1       string 
-	Age1        int    
-	Address1    string 
-	unexported1 bool             // this field is ignored
+	Name       string
+	Age        int
+	Address    string
+	Map        map[string]int
+	unexported bool             // this field is ignored
+	Unexported string `hsp:"-"` // this field is ignored
 }
 
-// Same struct with "string, string, int, bool"
 type Person2 struct {
-	Name2       string 
-	Address2    string 
-	Age2        int    
-	unexported2 bool             // this field is ignored
+	Name       string
+	Address    string
+	Age        int
+	Map222     map[string]int `hspack:"Map"`
+	unexported bool             // this field is ignored
+	Unexported string `hsp:"-"` // this field is ignored
 }
 ```
 
-But with the same type and content of exported member, `MarshalHash` will produce the same bytes array:
+But with the same name and content of exported member, `MarshalHash` will produce the same bytes array:
 ```go
 package person
 
@@ -41,16 +60,18 @@ import (
 
 func TestMarshalHashAccountStable3(t *testing.T) {
 	p1 := Person1{
-		Name1:       "Auxten",
-		Age1:        28,
-		Address1:    "@CovenantSQL.io",
-		unexported1: false,
+		Name:       "Auxten",
+		Address:    "@CovenantSQL.io",
+		Age:        70,
+		Map:         map[string]int{"ss": 2, "s": 1, "sss": 3},
+		unexported: false,
 	}
 	p2 := Person2{
-		Name2:       "Auxten",
-		Address2:    "@CovenantSQL.io",
-		Age2:        28,
-		unexported2: true,
+		Name:       "Auxten",
+		Address:    "@CovenantSQL.io",
+		Age:        70,
+		Map222:      map[string]int{"ss": 2, "s": 1, "sss": 3},
+		unexported: true,
 	}
 	bts1, err := p1.MarshalHash()
 	if err != nil {
@@ -65,8 +86,7 @@ func TestMarshalHashAccountStable3(t *testing.T) {
 	}
 }
 ```
-the order of struct member is sorted by type name, so "string, int", "int, string" is equivalent.
-
+the order of struct member is sorted by struct tag (if not, use name) 
 
 
 You can read more about MessagePack [in the wiki](http://github.com/tinylib/msgp/wiki), or at [msgpack.org](http://msgpack.org).
@@ -75,14 +95,10 @@ You can read more about MessagePack [in the wiki](http://github.com/tinylib/msgp
 
 - Use Go as your schema language
 - Performance
-- [JSON interop](http://godoc.org/github.com/tinylib/msgp/msgp#CopyToJSON)
-- [User-defined extensions](http://github.com/tinylib/msgp/wiki/Using-Extensions)
-- Type safety
-- Encoding flexibility
 
 ### Why not?
 
-- MessagePack: member name is unnecessary, different implementation may add some fields which made result undetermined.
+- MessagePack: member name is unnecessary, different implementation may add some fields which made result undetermined. And also golang's map...
 - Prorobuf: struct must defined in proto language, and other limitations discussed [here](https://gist.github.com/kchristidis/39c8b310fd9da43d515c4394c3cd9510)
 
 ### Quickstart
@@ -122,22 +138,6 @@ func (z *Test) Msgsize() (s int)
  - Support for arbitrary type system extensions
  - File-based dependency model means fast codegen regardless of source tree size.
 
-Consider the following:
-```go
-const Eight = 8
-type MyInt int
-type Data []byte
-
-type Struct struct {
-	Which  map[string]*MyInt 
-	Other  Data              
-	Nums   [Eight]float64    
-}
-```
-As long as the declarations of `MyInt` and `Data` are in the same file as `Struct`, the parser will determine that the type information for `MyInt` and `Data` can be passed into the definition of `Struct` before its methods are generated.
-
-### Known issues
-- map type is not supported. will cause undetermined marshal content.
 
 ### License
 

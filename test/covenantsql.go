@@ -25,6 +25,7 @@ type HeaderTest struct {
 	Version     int32  `hsp:"01"`
 	TestName    string `hsp:"00"`
 	TestArray   []byte
+	S           Struct
 	Producer    proto.NodeID  `hsp:"02"`
 	GenesisHash []hash.Hash   `hsp:"06"`
 	ParentHash  []*hash.Hash  `hsp:"03"`
@@ -35,9 +36,10 @@ type HeaderTest struct {
 
 // HeaderTest is a block header.
 type HeaderTest2 struct {
+	S            Struct // position is not relevant
 	Version2     int32  `hsp:"01"`
 	TestName2    string `hsp:"00"`
-	TestArray2   []byte
+	TestArray   []byte
 	Producer2    proto.NodeID  `hsp:"02"`
 	GenesisHash2 []hash.Hash   `hsp:"06"`
 	ParentHash2  []*hash.Hash  `hsp:"03"`
@@ -47,17 +49,19 @@ type HeaderTest2 struct {
 }
 
 type Person1 struct {
-	Name1       string
-	Age1        int
-	Address1    string
-	Map         map[string]int
-	unexported1 bool // this field is ignored
+	Name       string
+	Age        int
+	Address    string
+	Map        map[string]int
+	unexported bool             // this field is ignored
+	Unexported string `hsp:"-"` // this field is ignored
 }
 
 type Person2 struct {
-	Name2       string
-	Address2    string
-	Age2        int
-	Map222      map[string]int `hspack:"Map"`
-	unexported2 bool // this field is ignored
+	Name       string
+	Address    string
+	Age        int
+	Map222     map[string]int `hspack:"Map"`
+	unexported bool             // this field is ignored
+	Unexported string `hsp:"-"` // this field is ignored
 }
