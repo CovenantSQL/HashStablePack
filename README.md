@@ -1,6 +1,9 @@
 Hash Stable Pack
 =======
+
 This is a code generation tool for **QUICK** struct content compare or hash computation. 
+
+[中文介绍](README-zh.md)
 
 ### For
 - Quick compare nested struct without reflection (10~20 times faster)
