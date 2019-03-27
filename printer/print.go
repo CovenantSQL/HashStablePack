@@ -134,6 +134,7 @@ func generate(f *parse.FileSet, mode gen.Method) (*bytes.Buffer, *bytes.Buffer, 
 
 	myImports := []string{}
 	myImports = append(myImports, `hsp "github.com/CovenantSQL/HashStablePack/marshalhash"`)
+	myImports = append(myImports, "errors")
 
 	for _, imp := range f.Imports {
 		if imp.Name != nil {
@@ -163,6 +164,7 @@ func generateOldVersion(f *parse.FileSet, s *gen.Struct, mode gen.Method) (*byte
 
 	myImports := []string{}
 	myImports = append(myImports, `hsp "github.com/CovenantSQL/HashStablePack/marshalhash"`)
+	myImports = append(myImports, "errors")
 
 	for _, imp := range f.Imports {
 		if imp.Name != nil {
@@ -192,6 +194,7 @@ func generateVersion(f *parse.FileSet, s *gen.Struct, mode gen.Method) (*bytes.B
 
 	myImports := []string{}
 	myImports = append(myImports, `hsp "github.com/CovenantSQL/HashStablePack/marshalhash"`)
+	myImports = append(myImports, "errors")
 
 	for _, imp := range f.Imports {
 		if imp.Name != nil {
