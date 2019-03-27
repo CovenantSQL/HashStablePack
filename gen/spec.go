@@ -57,35 +57,55 @@ func (m Method) String() string {
 }
 
 const (
-	Marshal     Method = 1 << iota // hsp.Marshaler
-	Size                           // hsp.Sizer
-	Test                           // generate tests
-	invalidmeth                    // this isn't a method
-	marshaltest = Marshal | Test   // tests for Marshaler and Unmarshaler
+	Marshal     Method           = 1 << iota // hsp.Marshaler
+	Size                                     // hsp.Sizer
+	Test                                     // generate tests
+	invalidmeth                              // this isn't a method
+	marshaltest = Marshal | Test             // tests for Marshaler and Unmarshaler
 )
 
 type Printer struct {
-	gens []generator
+	m     Method
+	out   io.Writer
+	tests io.Writer
+	gens  []generator
 }
 
-func NewPrinter(m Method, out io.Writer, tests io.Writer) *Printer {
+func NewPrinter(m Method, out io.Writer, tests io.Writer, v string) *Printer {
 	if m.isset(Test) && tests == nil {
 		panic("cannot print tests with 'nil' tests argument!")
 	}
 	gens := make([]generator, 0, 7)
 	if m.isset(Marshal) {
-		gens = append(gens, marshal(out))
+		mg := marshal(out)
+		if v != "" {
+			mg.setVersion(v)
+		}
+		gens = append(gens, mg)
 	}
 	if m.isset(Size) {
-		gens = append(gens, sizes(out))
+		sg := sizes(out)
+		if v != "" {
+			sg.setVersion(v)
+		}
+		gens = append(gens, sg)
 	}
 	if m.isset(marshaltest) {
-		gens = append(gens, mtest(tests))
+		tg := mtest(tests)
+		if v != "" {
+			tg.setVersion(v)
+		}
+		gens = append(gens, tg)
 	}
 	if len(gens) == 0 {
 		panic("NewPrinter called with invalid method flags")
 	}
-	return &Printer{gens: gens}
+	return &Printer{
+		m:     m,
+		gens:  gens,
+		out:   out,
+		tests: tests,
+	}
 }
 
 // TransformPass is a pass that transforms individual

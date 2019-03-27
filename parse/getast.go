@@ -1,6 +1,7 @@
 package parse
 
 import (
+	"errors"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -10,8 +11,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/CovenantSQL/HashStablePack/gen"
 	"github.com/ttacon/chalk"
+
+	"github.com/CovenantSQL/HashStablePack/gen"
 )
 
 // A FileSet is the in-memory representation of a
@@ -247,6 +249,19 @@ loop:
 	}
 }
 
+func (f *FileSet) PrintVersion(s *gen.Struct, p *gen.Printer, v string) error {
+	if v == "oldver" && (s.OldMarshalBody == "" || s.OldMsgSizeBody == "") {
+		return errors.New("no old marshal body found")
+	}
+
+	f.applyDirs(p)
+	s.SetVarname("z")
+	pushstate(s.TypeName() + ":" + v)
+	err := p.Print(s)
+	popstate()
+	return err
+}
+
 func (f *FileSet) PrintTo(p *gen.Printer) error {
 	f.applyDirs(p)
 	names := make([]string, 0, len(f.Identities))
@@ -345,6 +360,9 @@ func (fs *FileSet) getField(f *ast.Field) []gen.StructField {
 		tags := strings.Split(body, ",")
 		if len(tags) == 2 && tags[1] == "extension" {
 			extension = true
+		}
+		if len(tags) == 2 && tags[1] == "version" {
+			sf[0].VersionField = true
 		}
 		// ignore "-" fields
 		if tags[0] == "-" {
@@ -531,7 +549,21 @@ func (fs *FileSet) parseExpr(e ast.Expr) gen.Elem {
 		return nil
 
 	case *ast.StructType:
-		return &gen.Struct{Fields: fs.parseFieldList(e.Fields)}
+		st := &gen.Struct{Fields: fs.parseFieldList(e.Fields)}
+		for i := range st.Fields {
+			if st.Fields[i].VersionField {
+				st.VersionField = st.Fields[i].FieldName
+				st.Versioning = true
+				break
+			}
+		}
+
+		// calc current hash
+		if st.Versioning {
+			st.ComputeVersion()
+		}
+
+		return st
 
 	case *ast.SelectorExpr:
 		return gen.Ident(stringify(e))

@@ -7,10 +7,11 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/CovenantSQL/HashStablePack/gen"
-	"github.com/CovenantSQL/HashStablePack/parse"
 	"github.com/ttacon/chalk"
 	"golang.org/x/tools/imports"
+
+	"github.com/CovenantSQL/HashStablePack/gen"
+	"github.com/CovenantSQL/HashStablePack/parse"
 )
 
 func infof(s string, v ...interface{}) {
@@ -35,6 +36,56 @@ func PrintFile(file string, f *parse.FileSet, mode gen.Method) error {
 	res := goformat(file, out.Bytes())
 	if tests != nil {
 		testfile := strings.TrimSuffix(file, ".go") + "_test.go"
+		err = format(testfile, tests.Bytes())
+		if err != nil {
+			return err
+		}
+		infof(">>> Wrote and formatted \"%s\"\n", testfile)
+	}
+	err = <-res
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// PrintVersionFile prints the method for the provide versioned type.
+func PrintVersionFile(file string, f *parse.FileSet, s *gen.Struct, mode gen.Method) error {
+	out, tests, err := generateVersion(f, s, mode)
+	if err != nil {
+		return err
+	}
+
+	genFileName := strings.TrimSuffix(file, "_gen.go") + "_" +
+		strings.ToLower(s.TypeName()) + "_" + s.CurrentVersion + "_gen.go"
+	res := goformat(genFileName, out.Bytes())
+	if tests != nil {
+		testfile := strings.TrimSuffix(genFileName, ".go") + "_test.go"
+		err = format(testfile, tests.Bytes())
+		if err != nil {
+			return err
+		}
+		infof(">>> Wrote and formatted \"%s\"\n", testfile)
+	}
+	err = <-res
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// PrintOldVersionFile prints the method for the provide versioned type.
+func PrintOldVersionFile(file string, f *parse.FileSet, s *gen.Struct, mode gen.Method) error {
+	out, tests, err := generateOldVersion(f, s, mode)
+	if err != nil {
+		return err
+	}
+
+	genFileName := strings.TrimSuffix(file, "_gen.go") + "_" +
+		strings.ToLower(s.TypeName()) + "_oldver_gen.go"
+	res := goformat(genFileName, out.Bytes())
+	if tests != nil {
+		testfile := strings.TrimSuffix(genFileName, ".go") + "_test.go"
 		err = format(testfile, tests.Bytes())
 		if err != nil {
 			return err
@@ -83,6 +134,7 @@ func generate(f *parse.FileSet, mode gen.Method) (*bytes.Buffer, *bytes.Buffer, 
 
 	myImports := []string{}
 	myImports = append(myImports, `hsp "github.com/CovenantSQL/HashStablePack/marshalhash"`)
+	myImports = append(myImports, "herr \"errors\"")
 
 	for _, imp := range f.Imports {
 		if imp.Name != nil {
@@ -103,7 +155,67 @@ func generate(f *parse.FileSet, mode gen.Method) (*bytes.Buffer, *bytes.Buffer, 
 		writeImportHeader(testbuf, "bytes", "crypto/rand", "encoding/binary", `hsp "github.com/CovenantSQL/HashStablePack/marshalhash"`, "testing")
 		testwr = testbuf
 	}
-	return outbuf, testbuf, f.PrintTo(gen.NewPrinter(mode, outbuf, testwr))
+	return outbuf, testbuf, f.PrintTo(gen.NewPrinter(mode, outbuf, testwr, ""))
+}
+
+func generateOldVersion(f *parse.FileSet, s *gen.Struct, mode gen.Method) (*bytes.Buffer, *bytes.Buffer, error) {
+	outbuf := bytes.NewBuffer(make([]byte, 0, 4096))
+	writePkgHeader(outbuf, f.Package)
+
+	myImports := []string{}
+	myImports = append(myImports, `hsp "github.com/CovenantSQL/HashStablePack/marshalhash"`)
+	myImports = append(myImports, "herr \"errors\"")
+
+	for _, imp := range f.Imports {
+		if imp.Name != nil {
+			// have an alias, include it.
+			myImports = append(myImports, imp.Name.Name+` `+imp.Path.Value)
+		} else {
+			myImports = append(myImports, imp.Path.Value)
+		}
+	}
+	dedup := dedupImports(myImports)
+	writeImportHeader(outbuf, dedup...)
+
+	var testbuf *bytes.Buffer
+	var testwr io.Writer
+	if mode&gen.Test == gen.Test {
+		testbuf = bytes.NewBuffer(make([]byte, 0, 4096))
+		writePkgHeader(testbuf, f.Package)
+		writeImportHeader(testbuf, "bytes", "crypto/rand", "encoding/binary", `hsp "github.com/CovenantSQL/HashStablePack/marshalhash"`, "testing")
+		testwr = testbuf
+	}
+	return outbuf, testbuf, f.PrintVersion(s, gen.NewPrinter(mode, outbuf, testwr, "oldver"), "oldver")
+}
+
+func generateVersion(f *parse.FileSet, s *gen.Struct, mode gen.Method) (*bytes.Buffer, *bytes.Buffer, error) {
+	outbuf := bytes.NewBuffer(make([]byte, 0, 4096))
+	writePkgHeader(outbuf, f.Package)
+
+	myImports := []string{}
+	myImports = append(myImports, `hsp "github.com/CovenantSQL/HashStablePack/marshalhash"`)
+	myImports = append(myImports, "herr \"errors\"")
+
+	for _, imp := range f.Imports {
+		if imp.Name != nil {
+			// have an alias, include it.
+			myImports = append(myImports, imp.Name.Name+` `+imp.Path.Value)
+		} else {
+			myImports = append(myImports, imp.Path.Value)
+		}
+	}
+	dedup := dedupImports(myImports)
+	writeImportHeader(outbuf, dedup...)
+
+	var testbuf *bytes.Buffer
+	var testwr io.Writer
+	if mode&gen.Test == gen.Test {
+		testbuf = bytes.NewBuffer(make([]byte, 0, 4096))
+		writePkgHeader(testbuf, f.Package)
+		writeImportHeader(testbuf, "bytes", "crypto/rand", "encoding/binary", `hsp "github.com/CovenantSQL/HashStablePack/marshalhash"`, "testing")
+		testwr = testbuf
+	}
+	return outbuf, testbuf, f.PrintVersion(s, gen.NewPrinter(mode, outbuf, testwr, s.CurrentVersion), s.CurrentVersion)
 }
 
 func writePkgHeader(b *bytes.Buffer, name string) {

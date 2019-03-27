@@ -30,6 +30,7 @@ func sizes(w io.Writer) *sizeGen {
 
 type sizeGen struct {
 	passes
+	v     string
 	p     printer
 	state sizeState
 }
@@ -38,6 +39,10 @@ func (s *sizeGen) Method() Method { return Size }
 
 func (s *sizeGen) Apply(dirs []string) error {
 	return nil
+}
+
+func (s *sizeGen) setVersion(v string) {
+	s.v = v
 }
 
 func builtinSize(typ string) string {
@@ -80,12 +85,33 @@ func (s *sizeGen) Execute(p Elem) error {
 		return nil
 	}
 
-	s.p.comment("Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message")
+	c := p.Varname()
 
-	s.p.printf("\nfunc (%s %s) Msgsize() (s int) {", p.Varname(), imutMethodReceiver(p))
-	s.state = assign
-	next(s, p)
-	s.p.nakedReturn()
+	s.p.comment("Msgsize" + s.v + " returns an upper bound estimate of the number of bytes occupied by the serialized message")
+	s.p.printf("\nfunc (%s %s) Msgsize%s() (s int) ", c, imutMethodReceiver(p), s.v)
+	if s.v != "oldver" {
+		s.p.printf("{")
+		s.state = assign
+
+		if ps, ok := p.(*Struct); ok && ps.Versioning && s.v == "" {
+			// version enabled and print switch statements
+			s.p.printf("\nswitch %s.HSPCurrentVersion() {", c)
+			for i := range ps.VersionList {
+				s.p.printf("\ncase %d:", i)
+				s.p.printf("\n return %s.Msgsize%s()", c, ps.VersionList[i])
+			}
+			s.p.print("\ndefault:")
+			s.p.print("\nreturn 0")
+			s.p.print("\n}")
+			s.p.nakedReturn()
+		} else {
+			next(s, p)
+			s.p.nakedReturn()
+		}
+	} else {
+		s.p.print(p.(*Struct).OldMsgSizeBody)
+	}
+
 	return s.p.err
 }
 

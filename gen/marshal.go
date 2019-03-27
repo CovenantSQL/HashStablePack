@@ -18,6 +18,7 @@ type marshalGen struct {
 	passes
 	p    printer
 	fuse []byte
+	v    string
 }
 
 func (m *marshalGen) Method() Method { return Marshal }
@@ -30,6 +31,10 @@ func (m *marshalGen) sort(e Elem) {
 	if es, ok := e.(*Struct); ok {
 		sort.Sort(es)
 	}
+}
+
+func (m *marshalGen) setVersion(v string) {
+	m.v = v
 }
 
 func (m *marshalGen) Execute(p Elem) error {
@@ -46,18 +51,62 @@ func (m *marshalGen) Execute(p Elem) error {
 		return nil
 	}
 
-	m.p.comment("MarshalHash marshals for hash")
-
 	// save the vname before
 	// calling methodReceiver so
 	// that z.Msgsize() is printed correctly
 	c := p.Varname()
 
-	m.p.printf("\nfunc (%s %s) MarshalHash() (o []byte, err error) {", p.Varname(), imutMethodReceiver(p))
-	m.p.printf("\nvar b []byte")
-	m.p.printf("\no = hsp.Require(b, %s.Msgsize())", c)
-	next(m, p)
-	m.p.nakedReturn()
+	if ps, ok := p.(*Struct); ok && ps.Versioning && m.v == "" {
+		// print version info list
+		m.p.printf("\nvar hspVersions%s = []string{", p.TypeName())
+		for i := range ps.VersionList {
+			m.p.printf("\n\"%s\",", ps.VersionList[i])
+		}
+		m.p.print("\n}")
+		// print current version function
+		m.p.comment("HSPCurrentVersion returns current struct version")
+		m.p.printf("\nfunc (%s %s) HSPCurrentVersion() int {", c, imutMethodReceiver(p))
+		m.p.printf("\nreturn int(%s.%s)", c, ps.VersionField)
+		m.p.print("\n}")
+		// print max version function
+		m.p.comment("HSPMaxVersion returns max struct version")
+		m.p.printf("\nfunc (%s %s) HSPMaxVersion() int {", c, imutMethodReceiver(p))
+		m.p.printf("\nreturn %d", len(ps.VersionList)-1)
+		m.p.print("\n}")
+		// print default version function
+		m.p.comment("HSPDefaultVersion returns default struct version")
+		m.p.printf("\nfunc (%s %s) HSPDefaultVersion() int {", c, imutMethodReceiver(p))
+		m.p.printf("\nreturn %d", ps.CurrentNumericVersion)
+		m.p.print("\n}")
+	}
+
+	m.p.comment("MarshalHash" + m.v + " marshals for hash")
+	m.p.printf("\nfunc (%s %s) MarshalHash%s() (o []byte, err error) ", c, imutMethodReceiver(p), m.v)
+	if m.v != "oldver" {
+		m.p.printf("{")
+
+		if ps, ok := p.(*Struct); ok && ps.Versioning && m.v == "" {
+			// version enabled and print switch statements
+			m.p.printf("\nswitch %s.HSPCurrentVersion() {", c)
+			for i := range ps.VersionList {
+				m.p.printf("\ncase %d:", i)
+				m.p.printf("\nreturn %s.MarshalHash%s()", c, ps.VersionList[i])
+			}
+			m.p.print("\ndefault:")
+			m.p.print("\nerr = herr.New(\"invalid struct version\")")
+			m.p.print("\nreturn")
+			m.p.print("\n}")
+			m.p.nakedReturn()
+		} else {
+			m.p.printf("\nvar b []byte")
+			m.p.printf("\no = hsp.Require(b, %s.Msgsize%s())", c, m.v)
+			next(m, p)
+			m.p.nakedReturn()
+		}
+	} else {
+		m.p.print(p.(*Struct).OldMarshalBody)
+	}
+
 	return m.p.err
 }
 

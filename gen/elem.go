@@ -1,7 +1,10 @@
 package gen
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -98,27 +101,27 @@ const (
 // all of the recognized identities
 // that map to primitive types
 var primitives = map[string]Primitive{
-	"[]byte":         Bytes,
-	"string":         String,
-	"float32":        Float32,
-	"float64":        Float64,
-	"complex64":      Complex64,
-	"complex128":     Complex128,
-	"uint":           Uint,
-	"uint8":          Uint8,
-	"uint16":         Uint16,
-	"uint32":         Uint32,
-	"uint64":         Uint64,
-	"byte":           Byte,
-	"rune":           Int32,
-	"int":            Int,
-	"int8":           Int8,
-	"int16":          Int16,
-	"int32":          Int32,
-	"int64":          Int64,
-	"bool":           Bool,
-	"interface{}":    Intf,
-	"time.Time":      Time,
+	"[]byte":        Bytes,
+	"string":        String,
+	"float32":       Float32,
+	"float64":       Float64,
+	"complex64":     Complex64,
+	"complex128":    Complex128,
+	"uint":          Uint,
+	"uint8":         Uint8,
+	"uint16":        Uint16,
+	"uint32":        Uint32,
+	"uint64":        Uint64,
+	"byte":          Byte,
+	"rune":          Int32,
+	"int":           Int,
+	"int8":          Int8,
+	"int16":         Int16,
+	"int32":         Int32,
+	"int64":         Int64,
+	"bool":          Bool,
+	"interface{}":   Intf,
+	"time.Time":     Time,
 	"hsp.Extension": Ext,
 }
 
@@ -359,8 +362,31 @@ func (s *Ptr) Needsinit() bool {
 
 type Struct struct {
 	common
-	Fields  []StructField // field list
-	AsTuple bool          // write as an array instead of a map
+	Fields                []StructField // field list
+	AsTuple               bool          // write as an array instead of a map
+	VersionField          string        // version field to dispatch marshal hash
+	Versioning            bool          // generate versioned marshal hash
+	OldMarshalBody        string        // old version hsp, marshal method body
+	OldMsgSizeBody        string        // old version hsp, msgsize method body
+	VersionList           []string      // version map
+	CurrentVersion        string        // current version hash
+	CurrentNumericVersion int           // current numeric version
+}
+
+func (s *Struct) ComputeVersion() {
+	var fieldHashes []string
+
+	for i := range s.Fields {
+		fieldHashes = append(fieldHashes, s.Fields[i].FieldName+":"+
+			s.Fields[i].FieldElem.TypeName()+":"+
+			s.Fields[i].FieldTag)
+	}
+
+	sort.Strings(fieldHashes)
+
+	h := sha256.Sum256([]byte(strings.Join(fieldHashes, "|")))
+	hs := hex.EncodeToString(h[:])
+	s.CurrentVersion = hs[:6]
 }
 
 func (s *Struct) TypeName() string {
@@ -402,10 +428,11 @@ func (s *Struct) Complexity() int {
 }
 
 type StructField struct {
-	FieldTag  string // the string inside the `msg:""` tag
-	RawTag    string // the full struct tag
-	FieldName string // the name of the struct field
-	FieldElem Elem   // the field type
+	FieldTag     string // the string inside the `msg:""` tag
+	RawTag       string // the full struct tag
+	FieldName    string // the name of the struct field
+	FieldElem    Elem   // the field type
+	VersionField bool   // the field represents the field
 }
 
 // Len returns the length of the uints array.
@@ -429,7 +456,6 @@ func (x *Struct) Less(i, j int) bool {
 func (x *Struct) Swap(i, j int) {
 	x.Fields[i], x.Fields[j] = x.Fields[j], x.Fields[i]
 }
-
 
 type ShimMode int
 

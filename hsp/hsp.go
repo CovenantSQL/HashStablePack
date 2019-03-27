@@ -24,13 +24,15 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/CovenantSQL/HashStablePack/gen"
-	"github.com/CovenantSQL/HashStablePack/parse"
-	"github.com/CovenantSQL/HashStablePack/printer"
-	"github.com/ttacon/chalk"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/ttacon/chalk"
+
+	"github.com/CovenantSQL/HashStablePack/gen"
+	"github.com/CovenantSQL/HashStablePack/parse"
+	"github.com/CovenantSQL/HashStablePack/printer"
 )
 
 var (
@@ -67,7 +69,6 @@ func main() {
 		os.Exit(1)
 	}
 
-
 	if err := Run(*file, mode, *unexported); err != nil {
 		fmt.Println(chalk.Red.Color(err.Error()))
 		os.Exit(1)
@@ -82,7 +83,7 @@ func Run(gofile string, mode gen.Method, unexported bool) error {
 	if mode&^gen.Test == 0 {
 		return nil
 	}
-	fmt.Println(chalk.Magenta.Color("======== MessagePack Code Generator ======="))
+	fmt.Println(chalk.Magenta.Color("======== HashStablePack Code Generator ======="))
 	fmt.Printf(chalk.Magenta.Color(">>> Input: \"%s\"\n"), gofile)
 	fs, err := parse.File(gofile, unexported)
 	if err != nil {
@@ -94,7 +95,53 @@ func Run(gofile string, mode gen.Method, unexported bool) error {
 		return nil
 	}
 
-	return printer.PrintFile(newFilename(gofile, fs.Package), fs, mode)
+	var versionTypes []*gen.Struct
+
+	for _, el := range fs.Identities {
+		if st, ok := el.(*gen.Struct); ok {
+			if st.Versioning {
+				versionTypes = append(versionTypes, st)
+			}
+		}
+	}
+
+	genFileName := newFilename(gofile, fs.Package)
+
+	if len(versionTypes) > 0 {
+		// should parse existing _gen.go for old version data
+		if err := parse.ParseOldGenFile(genFileName, versionTypes); err != nil {
+			return err
+		}
+
+		// set numeric versions
+		for _, st := range versionTypes {
+			found := false
+			for i, v := range st.VersionList {
+				if v == st.CurrentVersion {
+					found = true
+					st.CurrentNumericVersion = i
+					break
+				}
+			}
+			if !found {
+				st.CurrentNumericVersion = len(st.VersionList)
+				st.VersionList = append(st.VersionList, st.CurrentVersion)
+			}
+
+			// print version type files
+			if err := printer.PrintVersionFile(genFileName, fs, st, mode); err != nil {
+				return err
+			}
+
+			if st.OldMarshalBody != "" && st.OldMsgSizeBody != "" {
+				if err := printer.PrintOldVersionFile(genFileName, fs, st, mode); err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	return printer.PrintFile(genFileName, fs, mode)
 }
 
 // picks a new file name based on input flags and input filename(s).
