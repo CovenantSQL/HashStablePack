@@ -91,7 +91,7 @@ func (m *marshalGen) Execute(p Elem) error {
 				m.p.printf("\nreturn %s.MarshalHash%s()", c, ps.VersionList[i])
 			}
 			m.p.print("\ndefault:")
-			m.p.print("\nerr = errors.New(\"invalid struct version\")")
+			m.p.print("\nerr = herr.New(\"invalid struct version\")")
 			m.p.print("\nreturn")
 			m.p.print("\n}")
 			m.p.nakedReturn()
