@@ -85,10 +85,9 @@ func (s *sizeGen) Execute(p Elem) error {
 		return nil
 	}
 
-	s.p.comment("Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message")
-
 	c := p.Varname()
 
+	s.p.comment("Msgsize" + s.v + " returns an upper bound estimate of the number of bytes occupied by the serialized message")
 	s.p.printf("\nfunc (%s %s) Msgsize%s() (s int) ", c, imutMethodReceiver(p), s.v)
 	if s.v != "oldver" {
 		s.p.printf("{")

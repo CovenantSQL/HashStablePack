@@ -51,8 +51,6 @@ func (m *marshalGen) Execute(p Elem) error {
 		return nil
 	}
 
-	m.p.comment("MarshalHash marshals for hash")
-
 	// save the vname before
 	// calling methodReceiver so
 	// that z.Msgsize() is printed correctly
@@ -66,19 +64,23 @@ func (m *marshalGen) Execute(p Elem) error {
 		}
 		m.p.print("\n}")
 		// print current version function
+		m.p.comment("HSPCurrentVersion returns current struct version")
 		m.p.printf("\nfunc (%s %s) HSPCurrentVersion() int {", c, imutMethodReceiver(p))
 		m.p.printf("\nreturn int(%s.%s)", c, ps.VersionField)
 		m.p.print("\n}")
 		// print max version function
+		m.p.comment("HSPMaxVersion returns max struct version")
 		m.p.printf("\nfunc (%s %s) HSPMaxVersion() int {", c, imutMethodReceiver(p))
 		m.p.printf("\nreturn %d", len(ps.VersionList)-1)
 		m.p.print("\n}")
 		// print default version function
+		m.p.comment("HSPDefaultVersion returns default struct version")
 		m.p.printf("\nfunc (%s %s) HSPDefaultVersion() int {", c, imutMethodReceiver(p))
 		m.p.printf("\nreturn %d", ps.CurrentNumericVersion)
 		m.p.print("\n}")
 	}
 
+	m.p.comment("MarshalHash" + m.v + " marshals for hash")
 	m.p.printf("\nfunc (%s %s) MarshalHash%s() (o []byte, err error) ", c, imutMethodReceiver(p), m.v)
 	if m.v != "oldver" {
 		m.p.printf("{")
