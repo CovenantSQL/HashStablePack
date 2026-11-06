@@ -5,7 +5,7 @@ package marshalhash_test
 import (
 	"bytes"
 	"crypto/rand"
-	"github.com/CovenantSQL/HashStablePack/marshalhash"
+	"github.com/CovenantSQL/HashStablePack/v2/marshalhash"
 	"os"
 	"testing"
 )

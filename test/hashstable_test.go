@@ -2,7 +2,7 @@ package covenant
 
 import (
 	"bytes"
-	"github.com/CovenantSQL/CovenantSQL/crypto/hash"
+	"github.com/CovenantSQL/HashStablePack/v2/test/internal/hash"
 	"reflect"
 	"testing"
 	"time"

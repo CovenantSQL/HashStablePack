@@ -30,9 +30,9 @@ import (
 
 	"github.com/ttacon/chalk"
 
-	"github.com/CovenantSQL/HashStablePack/gen"
-	"github.com/CovenantSQL/HashStablePack/parse"
-	"github.com/CovenantSQL/HashStablePack/printer"
+	"github.com/CovenantSQL/HashStablePack/v2/gen"
+	"github.com/CovenantSQL/HashStablePack/v2/parse"
+	"github.com/CovenantSQL/HashStablePack/v2/printer"
 )
 
 var (

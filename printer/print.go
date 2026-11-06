@@ -10,8 +10,8 @@ import (
 	"github.com/ttacon/chalk"
 	"golang.org/x/tools/imports"
 
-	"github.com/CovenantSQL/HashStablePack/gen"
-	"github.com/CovenantSQL/HashStablePack/parse"
+	"github.com/CovenantSQL/HashStablePack/v2/gen"
+	"github.com/CovenantSQL/HashStablePack/v2/parse"
 )
 
 func infof(s string, v ...interface{}) {
@@ -133,7 +133,7 @@ func generate(f *parse.FileSet, mode gen.Method) (*bytes.Buffer, *bytes.Buffer, 
 	writePkgHeader(outbuf, f.Package)
 
 	myImports := []string{}
-	myImports = append(myImports, `hsp "github.com/CovenantSQL/HashStablePack/marshalhash"`)
+	myImports = append(myImports, `hsp "github.com/CovenantSQL/HashStablePack/v2/marshalhash"`)
 	myImports = append(myImports, "herr \"errors\"")
 
 	for _, imp := range f.Imports {
@@ -152,7 +152,7 @@ func generate(f *parse.FileSet, mode gen.Method) (*bytes.Buffer, *bytes.Buffer, 
 	if mode&gen.Test == gen.Test {
 		testbuf = bytes.NewBuffer(make([]byte, 0, 4096))
 		writePkgHeader(testbuf, f.Package)
-		writeImportHeader(testbuf, "bytes", "crypto/rand", "encoding/binary", `hsp "github.com/CovenantSQL/HashStablePack/marshalhash"`, "testing")
+		writeImportHeader(testbuf, "bytes", "crypto/rand", "encoding/binary", `hsp "github.com/CovenantSQL/HashStablePack/v2/marshalhash"`, "testing")
 		testwr = testbuf
 	}
 	return outbuf, testbuf, f.PrintTo(gen.NewPrinter(mode, outbuf, testwr, ""))
@@ -163,7 +163,7 @@ func generateOldVersion(f *parse.FileSet, s *gen.Struct, mode gen.Method) (*byte
 	writePkgHeader(outbuf, f.Package)
 
 	myImports := []string{}
-	myImports = append(myImports, `hsp "github.com/CovenantSQL/HashStablePack/marshalhash"`)
+	myImports = append(myImports, `hsp "github.com/CovenantSQL/HashStablePack/v2/marshalhash"`)
 	myImports = append(myImports, "herr \"errors\"")
 
 	for _, imp := range f.Imports {
@@ -182,7 +182,7 @@ func generateOldVersion(f *parse.FileSet, s *gen.Struct, mode gen.Method) (*byte
 	if mode&gen.Test == gen.Test {
 		testbuf = bytes.NewBuffer(make([]byte, 0, 4096))
 		writePkgHeader(testbuf, f.Package)
-		writeImportHeader(testbuf, "bytes", "crypto/rand", "encoding/binary", `hsp "github.com/CovenantSQL/HashStablePack/marshalhash"`, "testing")
+		writeImportHeader(testbuf, "bytes", "crypto/rand", "encoding/binary", `hsp "github.com/CovenantSQL/HashStablePack/v2/marshalhash"`, "testing")
 		testwr = testbuf
 	}
 	return outbuf, testbuf, f.PrintVersion(s, gen.NewPrinter(mode, outbuf, testwr, "oldver"), "oldver")
@@ -193,7 +193,7 @@ func generateVersion(f *parse.FileSet, s *gen.Struct, mode gen.Method) (*bytes.B
 	writePkgHeader(outbuf, f.Package)
 
 	myImports := []string{}
-	myImports = append(myImports, `hsp "github.com/CovenantSQL/HashStablePack/marshalhash"`)
+	myImports = append(myImports, `hsp "github.com/CovenantSQL/HashStablePack/v2/marshalhash"`)
 	myImports = append(myImports, "herr \"errors\"")
 
 	for _, imp := range f.Imports {
@@ -212,7 +212,7 @@ func generateVersion(f *parse.FileSet, s *gen.Struct, mode gen.Method) (*bytes.B
 	if mode&gen.Test == gen.Test {
 		testbuf = bytes.NewBuffer(make([]byte, 0, 4096))
 		writePkgHeader(testbuf, f.Package)
-		writeImportHeader(testbuf, "bytes", "crypto/rand", "encoding/binary", `hsp "github.com/CovenantSQL/HashStablePack/marshalhash"`, "testing")
+		writeImportHeader(testbuf, "bytes", "crypto/rand", "encoding/binary", `hsp "github.com/CovenantSQL/HashStablePack/v2/marshalhash"`, "testing")
 		testwr = testbuf
 	}
 	return outbuf, testbuf, f.PrintVersion(s, gen.NewPrinter(mode, outbuf, testwr, s.CurrentVersion), s.CurrentVersion)

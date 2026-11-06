@@ -13,7 +13,7 @@ import (
 
 	"github.com/ttacon/chalk"
 
-	"github.com/CovenantSQL/HashStablePack/gen"
+	"github.com/CovenantSQL/HashStablePack/v2/gen"
 )
 
 // A FileSet is the in-memory representation of a

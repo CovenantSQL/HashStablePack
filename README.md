@@ -108,7 +108,7 @@ You can read more about MessagePack [in the wiki](http://github.com/tinylib/msgp
 
 1. Quick Install
 ```bash
-go get -u github.com/CovenantSQL/HashStablePack/hsp
+go install github.com/CovenantSQL/HashStablePack/v2/hsp@latest
 ```
 
 2. Add tag for source
