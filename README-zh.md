@@ -133,6 +133,8 @@ HashStablePack 目前主要被 [CovenantSQL](https://github.com/CovenantSQL/Cove
 
 ## 怎么使用
 
+HashStablePack 需要 Go 1.26 或更高版本。
+
 ```go
 go install github.com/CovenantSQL/HashStablePack/v2/hsp@latest
 ```

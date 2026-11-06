@@ -107,6 +107,7 @@ You can read more about MessagePack [in the wiki](http://github.com/tinylib/msgp
 ### Quickstart
 
 1. Quick Install
+HashStablePack needs Go 1.26 or later.
 ```bash
 go install github.com/CovenantSQL/HashStablePack/v2/hsp@latest
 ```
