@@ -5,8 +5,7 @@ package marshalhash_test
 import (
 	"bytes"
 	"crypto/rand"
-	"github.com/CovenantSQL/HashStablePack/marshalhash"
-	prand "math/rand"
+	"github.com/CovenantSQL/HashStablePack/v2/marshalhash"
 	"os"
 	"testing"
 )
@@ -56,48 +55,5 @@ func TestReadWriteFile(t *testing.T) {
 
 	if !bytes.Equal([]byte(out), []byte(data)) {
 		t.Fatal("Input and output not equal.")
-	}
-}
-
-var blobstrings = []string{"", "a string", "a longer string here!"}
-var blobfloats = []float64{0.0, -1.0, 1.0, 3.1415926535}
-var blobints = []int64{0, 1, -1, 80000, 1 << 30}
-var blobbytes = [][]byte{[]byte{}, []byte("hello"), []byte("{\"is_json\":true,\"is_compact\":\"unable to determine\"}")}
-
-func BenchmarkWriteReadFile(b *testing.B) {
-
-	// let's not run out of disk space...
-	if b.N > 10000000 {
-		b.N = 10000000
-	}
-
-	fname := "bench-tmpfile"
-	f, err := os.Create(fname)
-	if err != nil {
-		b.Fatal(err)
-	}
-	defer func(f *os.File, name string) {
-		f.Close()
-		os.Remove(name)
-	}(f, fname)
-
-	data := make(Blobs, b.N)
-
-	for i := range data {
-		data[i].Name = blobstrings[prand.Intn(len(blobstrings))]
-		data[i].Float = blobfloats[prand.Intn(len(blobfloats))]
-		data[i].Amount = blobints[prand.Intn(len(blobints))]
-		data[i].Bytes = blobbytes[prand.Intn(len(blobbytes))]
-	}
-
-	b.SetBytes(int64(data.Msgsize() / b.N))
-	b.ResetTimer()
-	err = marshalhash.WriteFile(data, f)
-	if err != nil {
-		b.Fatal(err)
-	}
-	err = marshalhash.ReadFile(&data, f)
-	if err != nil {
-		b.Fatal(err)
 	}
 }

@@ -133,8 +133,16 @@ HashStablePack 目前主要被 [CovenantSQL](https://github.com/CovenantSQL/Cove
 
 ## 怎么使用
 
+HashStablePack 需要 Go 1.26 或更高版本。
+
 ```go
-go get -u github.com/CovenantSQL/HashStablePack/hsp
+go install github.com/CovenantSQL/HashStablePack/v2/hsp@latest
+```
+
+然后在你的模块中引入生成代码所依赖的包：
+
+```go
+go get github.com/CovenantSQL/HashStablePack/v2/marshalhash@latest
 ```
 
 在你需要生成的源文件头部加上

@@ -107,8 +107,14 @@ You can read more about MessagePack [in the wiki](http://github.com/tinylib/msgp
 ### Quickstart
 
 1. Quick Install
+HashStablePack needs Go 1.26 or later.
 ```bash
-go get -u github.com/CovenantSQL/HashStablePack/hsp
+go install github.com/CovenantSQL/HashStablePack/v2/hsp@latest
+```
+
+Then, in your module, require the package that the generated code imports:
+```bash
+go get github.com/CovenantSQL/HashStablePack/v2/marshalhash@latest
 ```
 
 2. Add tag for source

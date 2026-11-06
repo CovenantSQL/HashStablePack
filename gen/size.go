@@ -5,7 +5,7 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/CovenantSQL/HashStablePack/marshalhash"
+	"github.com/CovenantSQL/HashStablePack/v2/marshalhash"
 )
 
 type sizeState uint8

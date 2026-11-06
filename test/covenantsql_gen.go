@@ -5,7 +5,7 @@ package covenant
 import (
 	"sort"
 
-	hsp "github.com/CovenantSQL/HashStablePack/marshalhash"
+	hsp "github.com/CovenantSQL/HashStablePack/v2/marshalhash"
 )
 
 // MarshalHash marshals for hash
