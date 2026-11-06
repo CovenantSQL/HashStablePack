@@ -135,6 +135,11 @@ HashStablePack 目前主要被 [CovenantSQL](https://github.com/CovenantSQL/Cove
 
 ```go
 go install github.com/CovenantSQL/HashStablePack/v2/hsp@latest
+```
+
+然后在你的模块中引入生成代码所依赖的包：
+
+```go
 go get github.com/CovenantSQL/HashStablePack/v2/marshalhash@latest
 ```
 
