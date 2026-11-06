@@ -135,6 +135,7 @@ HashStablePack 目前主要被 [CovenantSQL](https://github.com/CovenantSQL/Cove
 
 ```go
 go install github.com/CovenantSQL/HashStablePack/v2/hsp@latest
+go get github.com/CovenantSQL/HashStablePack/v2/marshalhash@latest
 ```
 
 在你需要生成的源文件头部加上
